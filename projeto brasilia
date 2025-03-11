@@ -10,17 +10,14 @@
 
     <title>Calculadora de Pegada de Carbono</title>
 
-    <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
-    <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
 
-    <!-- Tela de Registro -->
     <div id="registerScreen" class="bg-gradient-primary">
         <div class="container">
             <div class="row justify-content-center">
@@ -62,7 +59,6 @@
         </div>
     </div>
 
-    <!-- Tela de Login -->
     <div id="loginScreen" class="bg-gradient-primary" style="display: none;">
         <div class="container">
             <div class="row justify-content-center">
@@ -107,22 +103,15 @@
         </div>
     </div>
 
-    <!-- Tela da Calculadora -->
     <div id="calculatorScreen" style="display: none;">
-        <!-- Page Wrapper -->
         <div id="wrapper">
-            <!-- Content Wrapper -->
             <div id="content-wrapper" class="d-flex flex-column">
-                <!-- Main Content -->
                 <div id="content">
-                    <!-- Begin Page Content -->
                     <div class="container-fluid">
-                        <!-- Page Heading -->
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <h1 class="h3 mb-0 text-gray-800">Calculadora de Pegada de Carbono</h1>
                         </div>
 
-                        <!-- Input Form -->
                         <div class="row">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -146,9 +135,7 @@
                             </div>
                         </div>
 
-                        <!-- Gráficos -->
                         <div class="row">
-                            <!-- Area Chart -->
                             <div class="col-xl-8 col-lg-7">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
@@ -162,7 +149,6 @@
                                 </div>
                             </div>
 
-                            <!-- Pie Chart -->
                             <div class="col-xl-4 col-lg-5">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
@@ -187,7 +173,6 @@
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <footer class="sticky-footer bg-white">
                     <div class="container my-auto">
                         <div class="copyright text-center my-auto">
@@ -199,22 +184,22 @@
         </div>
     </div>
 
-    <!-- Bootstrap core JavaScript-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-    <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
-    <!-- Biblioteca bcrypt para criptografia -->
+    <script src="vendor/chart.js/Chart.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
 
-    <!-- Scripts para navegação, validação e criptografia -->
     <script>
-        // Funções para alternar entre telas
         function showRegister() {
             document.getElementById('registerScreen').style.display = 'block';
             document.getElementById('loginScreen').style.display = 'none';
@@ -233,10 +218,8 @@
             document.getElementById('calculatorScreen').style.display = 'block';
         }
 
-        // Armazenamento de usuários (simulado em memória)
         let users = [];
 
-        // Evento de registro
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -244,34 +227,29 @@
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
 
-            // Criptografa a senha antes de armazenar
             bcrypt.hash(password, 10, function(err, hash) {
                 if (err) {
                     console.error("Erro ao criptografar a senha:", err);
                     return;
                 }
 
-                // Armazena o usuário com a senha criptografada
                 users.push({ name, email, password: hash });
-                showLogin(); // Redireciona para a tela de login após o registro
+                showLogin();
             });
         });
 
-        // Evento de login
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            // Verifica se o usuário existe
             const user = users.find(u => u.email === email);
             if (!user) {
                 alert('E-mail não encontrado. Por favor, registre-se.');
                 return;
             }
 
-            // Compara a senha criptografada
             bcrypt.compare(password, user.password, function(err, result) {
                 if (err) {
                     console.error("Erro ao comparar senhas:", err);
@@ -280,17 +258,16 @@
 
                 if (result) {
                     alert('Login realizado com sucesso!');
-                    showCalculator(); // Redireciona para a calculadora
+                    showCalculator();
                 } else {
                     alert('Senha incorreta. Tente novamente.');
                 }
             });
         });
 
-        // Função para calcular a pegada de carbono
         function calculateCarbonFootprint(carKm, busKm) {
-            const carEmissionFactor = 0.2; // kg CO2 por km
-            const busEmissionFactor = 0.1; // kg CO2 por km
+            const carEmissionFactor = 0.2;
+            const busEmissionFactor = 0.1;
 
             const carEmission = carKm * carEmissionFactor;
             const busEmission = busKm * busEmissionFactor;
@@ -302,9 +279,7 @@
             };
         }
 
-        // Função para atualizar os gráficos
         function updateCharts(carEmission, busEmission) {
-            // Area Chart
             var ctx = document.getElementById("myAreaChart");
             var myAreaChart = new Chart(ctx, {
                 type: 'line',
@@ -335,7 +310,6 @@
                 }
             });
 
-            // Pie Chart
             var ctx = document.getElementById("myPieChart");
             var myPieChart = new Chart(ctx, {
                 type: 'pie',
@@ -360,7 +334,6 @@
             });
         }
 
-        // Evento de submissão do formulário da calculadora
         document.getElementById('carbonFootprintForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -372,7 +345,6 @@
             updateCharts(emissions.carEmission, emissions.busEmission);
         });
 
-        // Mostra a tela de registro ao carregar a página
         showRegister();
     </script>
 
