@@ -1,10 +1,12 @@
-!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de IMC e Pressão Arterial</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         body {
             background: linear-gradient(to bottom, #f0f8ff, #ffffff);
@@ -51,140 +53,217 @@
         }
     </style>
 </head>
-<body onload="exibirOpcoes()">
-<div class="container">
-    <h1>Calculadora de IMC e Pressão Arterial</h1>
-    <form id="imcForm">
-        <div id="step1">
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome:</label>
-                <input type="text" id="nome" class="form-control" placeholder="Digite seu nome" required>
+
+<body onload="loadCredentials()">
+    <div class="container">
+        <h1>Calculadora de IMC e Pressão Arterial</h1>
+        <form id="imcForm">
+            <div id="step1">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <input type="text" id="nome" class="form-control" placeholder="Digite seu nome" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail:</label>
+                    <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="senha" class="form-label">Senha:</label>
+                    <input type="password" id="senha" class="form-control" placeholder="Digite sua senha" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="registrar()">Registrar</button>
+                <button type="button" class="btn btn-success" onclick="showLogin()">Já tem uma conta? Faça login</button>
             </div>
-            <div class="mb-3">
-                <label for="telefone" class="form-label">Número de Telefone:</label>
-                <input type="tel" id="telefone" class="form-control" placeholder="Ex: +55 11 91234-5678" required>
+
+            <div id="step2" style="display: none;">
+                <div class="mb-3">
+                    <label for="loginEmail" class="form-label">E-mail:</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Digite seu e-mail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Senha:</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Digite sua senha" required>
+                </div>
+                <div class="mb-3">
+                    <div class="custom-control custom-checkbox small">
+                        <input type="checkbox" class="custom-control-input" id="rememberMe">
+                        <label class="custom-control-label" for="rememberMe">Lembrar-me</label>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="login()">Login</button>
+                <button type="button" class="btn btn-secondary" onclick="showRegister()">Voltar para registro</button>
             </div>
-            <button type="button" class="btn btn-primary" onclick="enviarCodigo()">Enviar Código</button>
-        </div>
-        <div id="step2" style="display: none;">
-            <div class="mb-3">
-                <label for="codigo" class="form-label">Código SMS:</label>
-                <input type="text" id="codigo" class="form-control" placeholder="Digite o código recebido" required>
+
+            <div id="step3" style="display: none;">
+                <div class="mb-3">
+                    <label for="idade" class="form-label">Idade:</label>
+                    <input type="number" id="idade" class="form-control" placeholder="Digite sua idade" required>
+                </div>
+                <div class="mb-3">
+                    <label for="altura" class="form-label">Altura (em metros):</label>
+                    <input type="number" step="0.01" id="altura" class="form-control" placeholder="Ex: 1.75" required>
+                </div>
+                <div class="mb-3">
+                    <label for="peso" class="form-label">Peso (em kg):</label>
+                    <input type="number" step="0.1" id="peso" class="form-control" placeholder="Ex: 70.5" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calcularIMC()">Calcular IMC</button>
+                <button type="button" class="btn btn-danger" onclick="calcularPressao()">Calcular Chance de Aumento de Pressão Arterial</button>
             </div>
-            <button type="button" class="btn btn-primary" onclick="verificarCodigo()">Verificar Código</button>
-        </div>
-        <div id="step3" style="display: none;">
-            <div class="mb-3">
-                <label for="idade" class="form-label">Idade:</label>
-                <input type="number" id="idade" class="form-control" placeholder="Digite sua idade" required>
-            </div>
-            <div class="mb-3">
-                <label for="altura" class="form-label">Altura (em metros):</label>
-                <input type="number" step="0.01" id="altura" class="form-control" placeholder="Ex: 1.75" required>
-            </div>
-            <div class="mb-3">
-                <label for="peso" class="form-label">Peso (em kg):</label>
-                <input type="number" step="0.1" id="peso" class="form-control" placeholder="Ex: 70.5" required>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="calcularIMC()">Calcular IMC</button>
-            <button type="button" class="btn btn-danger" onclick="calcularPressao()">Calcular Chance de Aumento de Pressão Arterial</button>
-        </div>
-    </form>
-    <div id="resultado" class="result"></div>
-    <div id="dicas" class="tips"></div>
-</div>
+        </form>
+        <div id="resultado" class="result"></div>
+        <div id="dicas" class="tips"></div>
+    </div>
 
-<script>
-    function exibirOpcoes() {
-        const escolha = confirm("Olá! O que gostaria de calcular hoje?\n\nClique em 'OK' para calcular o IMC ou 'Cancelar' para calcular a Chance de Aumento de Pressão Arterial.");
-
-        if (escolha) {
-            alert("Você escolheu calcular o IMC. Preencha os dados necessários.");
-        } else {
-            alert("Você escolheu calcular a Chance de Aumento de Pressão Arterial. Preencha os dados necessários.");
-        }
-    }
-
-    let codigoEnviado = "";
-
-    function enviarCodigo() {
-        const telefone = document.getElementById("telefone").value.trim();
-
-        if (!telefone) {
-            alert("Por favor, insira um número de telefone válido.");
-            return;
+    <script>
+        function encryptData(data, key) {
+            return CryptoJS.AES.encrypt(data, key).toString();
         }
 
-        codigoEnviado = Math.floor(100000 + Math.random() * 900000).toString();
-        alert(`Código enviado para ${telefone}: ${codigoEnviado}`); // Simula envio de SMS
-        document.getElementById("step1").style.display = "none";
-        document.getElementById("step2").style.display = "block";
-    }
-
-    function verificarCodigo() {
-        const codigo = document.getElementById("codigo").value.trim();
-
-        if (codigo === codigoEnviado) {
-            alert("Código verificado com sucesso!");
-            document.getElementById("step2").style.display = "none";
-            document.getElementById("step3").style.display = "block";
-        } else {
-            alert("Código inválido. Tente novamente.");
-        }
-    }
-
-    function calcularIMC() {
-        const altura = parseFloat(document.getElementById("altura").value);
-        const peso = parseFloat(document.getElementById("peso").value);
-
-        if (isNaN(altura) || isNaN(peso) || altura <= 0 || peso <= 0) {
-            alert("Por favor, insira valores válidos para altura e peso.");
-            return;
+        function decryptData(data, key) {
+            const bytes = CryptoJS.AES.decrypt(data, key);
+            return bytes.toString(CryptoJS.enc.Utf8);
         }
 
-        const imc = peso / (altura * altura);
-        let categoria = "";
-        let dicas = "";
-
-        if (imc < 18.5) {
-            categoria = "Abaixo do peso";
-            dicas = "Consuma uma dieta equilibrada com calorias suficientes. Consulte um nutricionista.";
-        } else if (imc >= 18.5 && imc < 24.9) {
-            categoria = "Peso normal";
-            dicas = "Mantenha uma alimentação saudável e pratique atividades físicas regularmente.";
-        } else if (imc >= 25 && imc < 29.9) {
-            categoria = "Sobrepeso";
-            dicas = "Reduza o consumo de alimentos ultraprocessados e faça exercícios regularmente.";
-        } else if (imc >= 30) {
-            categoria = "Obesidade";
-            dicas = "Procure orientação médica e adote mudanças no estilo de vida, incluindo uma dieta controlada.";
+        function saveCredentials(email, senha) {
+            const encryptionKey = 'sua_chave_secreta';
+            const encryptedEmail = encryptData(email, encryptionKey);
+            const encryptedPassword = encryptData(senha, encryptionKey);
+            localStorage.setItem('savedEmail', encryptedEmail);
+            localStorage.setItem('savedPassword', encryptedPassword);
         }
 
-        document.getElementById("resultado").innerHTML = `Seu IMC é <strong>${imc.toFixed(2)}</strong> (${categoria}).`;
-        document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> ${dicas}`;
-    }
+        function loadCredentials() {
+            const encryptionKey = 'sua_chave_secreta';
+            const savedEmail = localStorage.getItem('savedEmail');
+            const savedPassword = localStorage.getItem('savedPassword');
 
-    function calcularPressao() {
-        const idade = parseInt(document.getElementById("idade").value);
-        const peso = parseFloat(document.getElementById("peso").value);
-        const altura = parseFloat(document.getElementById("altura").value);
-
-        if (isNaN(idade) || isNaN(peso) || isNaN(altura)) {
-            alert("Por favor, insira todos os dados corretamente.");
-            return;
+            if (savedEmail && savedPassword) {
+                const decryptedEmail = decryptData(savedEmail, encryptionKey);
+                const decryptedPassword = decryptData(savedPassword, encryptionKey);
+                document.getElementById('loginEmail').value = decryptedEmail;
+                document.getElementById('loginPassword').value = decryptedPassword;
+                document.getElementById('rememberMe').checked = true;
+            }
         }
 
-        let risco = "Baixo";
-        if (idade > 40 && peso > 85) {
-            risco = "Alto";
-        } else if (idade > 30 && peso > 75) {
-            risco = "Moderado";
+        function showRegister() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
         }
 
-        document.getElementById("resultado").innerHTML = `Chance de aumento de pressão arterial: <strong>${risco}</strong>.`;
-        document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> Controle o peso e faça exames periódicos.`;
-    }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        function showLogin() {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            document.getElementById('step3').style.display = 'none';
+        }
+
+        function showCalculator() {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+        }
+
+        function registrar() {
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            if (!nome || !email || !senha) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            saveCredentials(email, senha);
+            alert('Registro realizado com sucesso!');
+            showLogin();
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            const encryptionKey = 'sua_chave_secreta';
+            const savedEmail = localStorage.getItem('savedEmail');
+            const savedPassword = localStorage.getItem('savedPassword');
+
+            if (!savedEmail || !savedPassword) {
+                alert('Nenhum usuário registrado. Por favor, registre-se primeiro.');
+                return;
+            }
+
+            const decryptedEmail = decryptData(savedEmail, encryptionKey);
+            const decryptedPassword = decryptData(savedPassword, encryptionKey);
+
+            if (email === decryptedEmail && senha === decryptedPassword) {
+                if (rememberMe) {
+                    saveCredentials(email, senha);
+                } else {
+                    localStorage.removeItem('savedEmail');
+                    localStorage.removeItem('savedPassword');
+                }
+                alert('Login realizado com sucesso!');
+                showCalculator();
+            } else {
+                alert('E-mail ou senha incorretos.');
+            }
+        }
+
+        function calcularIMC() {
+            const altura = parseFloat(document.getElementById("altura").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+
+            if (isNaN(altura) || isNaN(peso) || altura <= 0 || peso <= 0) {
+                alert("Por favor, insira valores válidos para altura e peso.");
+                return;
+            }
+
+            const imc = peso / (altura * altura);
+            let categoria = "";
+            let dicas = "";
+
+            if (imc < 18.5) {
+                categoria = "Abaixo do peso";
+                dicas = "Consuma uma dieta equilibrada com calorias suficientes. Consulte um nutricionista.";
+            } else if (imc >= 18.5 && imc < 24.9) {
+                categoria = "Peso normal";
+                dicas = "Mantenha uma alimentação saudável e pratique atividades físicas regularmente.";
+            } else if (imc >= 25 && imc < 29.9) {
+                categoria = "Sobrepeso";
+                dicas = "Reduza o consumo de alimentos ultraprocessados e faça exercícios regularmente.";
+            } else if (imc >= 30) {
+                categoria = "Obesidade";
+                dicas = "Procure orientação médica e adote mudanças no estilo de vida, incluindo uma dieta controlada.";
+            }
+
+            document.getElementById("resultado").innerHTML = `Seu IMC é <strong>${imc.toFixed(2)}</strong> (${categoria}).`;
+            document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> ${dicas}`;
+        }
+
+        function calcularPressao() {
+            const idade = parseInt(document.getElementById("idade").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+            const altura = parseFloat(document.getElementById("altura").value);
+
+            if (isNaN(idade) || isNaN(peso) || isNaN(altura)) {
+                alert("Por favor, insira todos os dados corretamente.");
+                return;
+            }
+
+            let risco = "Baixo";
+            if (idade > 40 && peso > 85) {
+                risco = "Alto";
+            } else if (idade > 30 && peso > 75) {
+                risco = "Moderado";
+            }
+
+            document.getElementById("resultado").innerHTML = `Chance de aumento de pressão arterial: <strong>${risco}</strong>.`;
+            document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> Controle o peso e faça exames periódicos.`;
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
