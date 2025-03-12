@@ -11,11 +11,19 @@
     <title>Calculadora de Pegada de Carbono</title>
 
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
 
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="js/sb-admin-2.min.js"></script>
+    <script src="vendor/chart.js/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -35,13 +43,16 @@
                                         </div>
                                         <form class="user" id="registerForm">
                                             <div class="form-group">
-                                                <input type="text" class="form-control form-control-user" id="registerName" placeholder="Nome completo" required>
+                                                <input type="text" class="form-control form-control-user"
+                                                    id="registerName" placeholder="Nome completo" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="email" class="form-control form-control-user" id="registerEmail" placeholder="E-mail" required>
+                                                <input type="email" class="form-control form-control-user"
+                                                    id="registerEmail" placeholder="E-mail" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="password" class="form-control form-control-user" id="registerPassword" placeholder="Senha" required>
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="registerPassword" placeholder="Senha" required>
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-user btn-block">
                                                 Registrar
@@ -49,7 +60,8 @@
                                         </form>
                                         <hr>
                                         <div class="text-center">
-                                            <a class="small" href="#" onclick="showLogin()">Já tem uma conta? Faça login!</a>
+                                            <a class="small" href="#" onclick="showLogin()">Já tem uma conta? Faça
+                                                login!</a>
                                         </div>
                                     </div>
                                 </div>
@@ -76,15 +88,18 @@
                                         </div>
                                         <form class="user" id="loginForm">
                                             <div class="form-group">
-                                                <input type="email" class="form-control form-control-user" id="loginEmail" placeholder="E-mail" required>
+                                                <input type="email" class="form-control form-control-user"
+                                                    id="loginEmail" placeholder="E-mail" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="password" class="form-control form-control-user" id="loginPassword" placeholder="Senha" required>
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="loginPassword" placeholder="Senha" required>
                                             </div>
                                             <div class="form-group">
                                                 <div class="custom-control custom-checkbox small">
                                                     <input type="checkbox" class="custom-control-input" id="rememberMe">
-                                                    <label class="custom-control-label" for="rememberMe">Lembrar-me</label>
+                                                    <label class="custom-control-label"
+                                                        for="rememberMe">Lembrar-me</label>
                                                 </div>
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-user btn-block">
@@ -124,13 +139,41 @@
                                         <form id="carbonFootprintForm">
                                             <div class="form-group">
                                                 <label for="carKm">Quantos km você roda de carro por mês?</label>
-                                                <input type="number" class="form-control" id="carKm" placeholder="Km de carro">
+                                                <input type="number" class="form-control" id="carKm"
+                                                    placeholder="Km de carro">
                                             </div>
                                             <div class="form-group">
                                                 <label for="busKm">Quantos km você roda de ônibus por mês?</label>
-                                                <input type="number" class="form-control" id="busKm" placeholder="Km de ônibus">
+                                                <input type="number" class="form-control" id="busKm"
+                                                    placeholder="Km de ônibus">
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Calcular Pegada de Carbono</button>
+                                            <div class="form-group">
+                                                <label for="motoKm">Quantos km você roda de moto por mês?</label>
+                                                <input type="number" class="form-control" id="motoKm"
+                                                    placeholder="Km de moto">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="truckKm">Quantos km você roda de caminhão por mês?</label>
+                                                <input type="number" class="form-control" id="truckKm"
+                                                    placeholder="Km de caminhão">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="energyConsumption">Consumo de energia elétrica (kWh/mês)</label>
+                                                <input type="number" class="form-control" id="energyConsumption"
+                                                    placeholder="Consumo de energia">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="estimatedEmission">Quanto você acha que consome de emissão de carbono por mês? (em kg)</label>
+                                                <input type="number" class="form-control" id="estimatedEmission"
+                                                    placeholder="Emissão estimada de carbono">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="improvementActions">O que você faria para melhorar essa situação?</label>
+                                                <textarea class="form-control" id="improvementActions" rows="3"
+                                                    placeholder="Descreva suas ações..."></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Calcular Pegada de
+                                                Carbono</button>
                                         </form>
                                     </div>
                                 </div>
@@ -141,7 +184,8 @@
                             <div class="col-xl-8 col-lg-7">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Emissão de CO2 (kg) por Tipo de Transporte</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Emissão de CO2 (kg) por Tipo de
+                                            Transporte</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-area">
@@ -154,7 +198,8 @@
                             <div class="col-xl-4 col-lg-5">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Distribuição da Pegada de Carbono</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Distribuição da Pegada de Carbono
+                                        </h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-pie pt-4 pb-2">
@@ -166,6 +211,15 @@
                                             </span>
                                             <span class="mr-2">
                                                 <i class="fas fa-circle text-success"></i> Ônibus
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle text-warning"></i> Moto
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle text-danger"></i> Caminhão
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle text-info"></i> Energia
                                             </span>
                                         </div>
                                     </div>
@@ -189,15 +243,6 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <script src="vendor/chart.js/Chart.min.js"></script>
 
     <script>
         function encryptData(data, key) {
@@ -249,92 +294,64 @@
             document.getElementById('calculatorScreen').style.display = 'block';
         }
 
-        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+        document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
             const nome = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const senha = document.getElementById('registerPassword').value;
 
-            try {
-                const response = await fetch('http://localhost:3000/registrar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ nome, email, senha })
-                });
-
-                const data = await response.json();
-
-                if (response.status === 201) {
-                    alert(data.message);
-                    showLogin();
-                } else {
-                    alert(data.message || 'Erro ao registrar usuário.');
-                }
-            } catch (error) {
-                console.error('Erro ao enviar dados:', error);
-                alert('Erro ao conectar ao servidor.');
-            }
+            alert('Registro simulado com sucesso!');
+            showLogin();
         });
 
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
 
-            try {
-                const response = await fetch('http://localhost:3000/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, senha })
-                });
-
-                const data = await response.json();
-
-                if (response.status === 200) {
-                    if (rememberMe) {
-                        saveCredentials(email, senha);
-                    } else {
-                        localStorage.removeItem('savedEmail');
-                        localStorage.removeItem('savedPassword');
-                    }
-                    alert(data.message);
-                    showCalculator();
-                } else {
-                    alert(data.message || 'Erro ao fazer login.');
-                }
-            } catch (error) {
-                console.error('Erro ao enviar dados:', error);
-                alert('Erro ao conectar ao servidor.');
+            if (rememberMe) {
+                saveCredentials(email, senha);
+            } else {
+                localStorage.removeItem('savedEmail');
+                localStorage.removeItem('savedPassword');
             }
+
+            alert('Login simulado com sucesso!');
+            showCalculator();
         });
 
-        function calculateCarbonFootprint(carKm, busKm) {
+        function calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, energyConsumption) {
             const carEmissionFactor = 0.2;
             const busEmissionFactor = 0.1;
+            const motoEmissionFactor = 0.15;
+            const truckEmissionFactor = 0.3;
+            const energyEmissionFactor = 0.1;
 
             const carEmission = carKm * carEmissionFactor;
             const busEmission = busKm * busEmissionFactor;
+            const motoEmission = motoKm * motoEmissionFactor;
+            const truckEmission = truckKm * truckEmissionFactor;
+            const energyEmission = energyConsumption * energyEmissionFactor;
 
             return {
                 carEmission: carEmission,
                 busEmission: busEmission,
-                totalEmission: carEmission + busEmission
+                motoEmission: motoEmission,
+                truckEmission: truckEmission,
+                energyEmission: energyEmission,
+                totalEmission: carEmission + busEmission + motoEmission + truckEmission + energyEmission
             };
         }
 
-        function updateCharts(carEmission, busEmission) {
+        function updateCharts(carEmission, busEmission, motoEmission, truckEmission, energyEmission) {
             var ctx = document.getElementById("myAreaChart");
             var myAreaChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ["Carro", "Ônibus"],
+                    labels: ["Carro", "Ônibus", "Moto", "Caminhão", "Energia"],
                     datasets: [{
                         label: "Emissão de CO2 (kg)",
                         lineTension: 0.3,
@@ -348,7 +365,7 @@
                         pointHoverBorderColor: "rgba(78, 115, 223, 1)",
                         pointHitRadius: 10,
                         pointBorderWidth: 2,
-                        data: [carEmission, busEmission],
+                        data: [carEmission, busEmission, motoEmission, truckEmission, energyEmission],
                     }],
                 },
                 options: {
@@ -364,11 +381,11 @@
             var myPieChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ["Carro", "Ônibus"],
+                    labels: ["Carro", "Ônibus", "Moto", "Caminhão", "Energia"],
                     datasets: [{
-                        data: [carEmission, busEmission],
-                        backgroundColor: ['#4e73df', '#1cc88a'],
-                        hoverBackgroundColor: ['#2e59d9', '#17a673'],
+                        data: [carEmission, busEmission, motoEmission, truckEmission, energyEmission],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#d4a11d', '#c82333', '#2c9faf'],
                         hoverBorderColor: "rgba(234, 236, 244, 1)",
                     }],
                 },
@@ -384,21 +401,44 @@
             });
         }
 
-        document.getElementById('carbonFootprintForm').addEventListener('submit', function(event) {
+        function generatePDF(emissions, estimatedEmission, improvementActions) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("Relatório de Pegada de Carbono", 10, 10);
+            doc.text(`Emissão de Carro: ${emissions.carEmission.toFixed(2)} kg`, 10, 20);
+            doc.text(`Emissão de Ônibus: ${emissions.busEmission.toFixed(2)} kg`, 10, 30);
+            doc.text(`Emissão de Moto: ${emissions.motoEmission.toFixed(2)} kg`, 10, 40);
+            doc.text(`Emissão de Caminhão: ${emissions.truckEmission.toFixed(2)} kg`, 10, 50);
+            doc.text(`Emissão de Energia: ${emissions.energyEmission.toFixed(2)} kg`, 10, 60);
+            doc.text(`Total de Emissão: ${emissions.totalEmission.toFixed(2)} kg`, 10, 70);
+            doc.text(`Emissão Estimada: ${estimatedEmission} kg`, 10, 80);
+            doc.text(`Ações para Melhorar: ${improvementActions}`, 10, 90);
+            doc.save("relatorio_pegada_carbono.pdf");
+        }
+
+        document.getElementById('carbonFootprintForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const carKm = parseFloat(document.getElementById('carKm').value);
-            const busKm = parseFloat(document.getElementById('busKm').value);
+            const carKm = parseFloat(document.getElementById('carKm').value) || 0;
+            const busKm = parseFloat(document.getElementById('busKm').value) || 0;
+            const motoKm = parseFloat(document.getElementById('motoKm').value) || 0;
+            const truckKm = parseFloat(document.getElementById('truckKm').value) || 0;
+            const energyConsumption = parseFloat(document.getElementById('energyConsumption').value) || 0;
+            const estimatedEmission = parseFloat(document.getElementById('estimatedEmission').value) || 0;
+            const improvementActions = document.getElementById('improvementActions').value;
 
-            const emissions = calculateCarbonFootprint(carKm, busKm);
+            const emissions = calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, energyConsumption);
 
-            updateCharts(emissions.carEmission, emissions.busEmission);
+            alert(`Emissão calculada:\nCarro: ${emissions.carEmission.toFixed(2)} kg\nÔnibus: ${emissions.busEmission.toFixed(2)} kg\nMoto: ${emissions.motoEmission.toFixed(2)} kg\nCaminhão: ${emissions.truckEmission.toFixed(2)} kg\nEnergia: ${emissions.energyEmission.toFixed(2)} kg\nTotal: ${emissions.totalEmission.toFixed(2)} kg\n\nEmissão estimada pelo usuário: ${estimatedEmission} kg\n\nAções para melhorar:\n${improvementActions}`);
+
+            updateCharts(emissions.carEmission, emissions.busEmission, emissions.motoEmission, emissions.truckEmission, emissions.energyEmission);
+
+            generatePDF(emissions, estimatedEmission, improvementActions);
         });
 
         loadCredentials();
         showRegister();
     </script>
-
 </body>
 
 </html>
