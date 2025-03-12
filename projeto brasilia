@@ -183,7 +183,7 @@
                                                     placeholder="Emissão estimada de carbono">
                                             </div>
                                             <div class="form-group">
-                                                <label for="improvementActions">O que você faria para melhorar essa situação?</label>
+                                                <label for="improvementActions">O que você faria para melhorar essa situaç��o?</label>
                                                 <textarea class="form-control" id="improvementActions" rows="3"
                                                     placeholder="Descreva suas ações..."></textarea>
                                             </div>
@@ -452,6 +452,33 @@
             doc.save("relatorio_pegada_carbono.pdf");
         }
 
+        function calculateCompensation(totalEmission) {
+            const treesNeeded = totalEmission / 22;
+            const carbonCreditsNeeded = totalEmission / 1000;
+            return { treesNeeded, carbonCreditsNeeded };
+        }
+
+        const compensationButton = document.createElement('button');
+        compensationButton.textContent = 'Calcular Compensação de Carbono';
+        compensationButton.className = 'btn btn-secondary mt-3';
+        compensationButton.onclick = function () {
+            const totalEmission = parseFloat(document.getElementById('totalEmission').value) || 0;
+
+            if (totalEmission > 0) {
+                const compensation = calculateCompensation(totalEmission);
+                alert(`Compensação necessária:\nÁrvores a plantar: ${compensation.treesNeeded.toFixed(2)}\nCréditos de carbono: ${compensation.carbonCreditsNeeded.toFixed(2)}`);
+            } else {
+                alert('Por favor, calcule a pegada de carbono primeiro.');
+            }
+        };
+
+        document.getElementById('carbonFootprintForm').appendChild(compensationButton);
+
+        const totalEmissionInput = document.createElement('input');
+        totalEmissionInput.type = 'hidden';
+        totalEmissionInput.id = 'totalEmission';
+        document.getElementById('carbonFootprintForm').appendChild(totalEmissionInput);
+
         document.getElementById('carbonFootprintForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -467,6 +494,8 @@
             const improvementActions = document.getElementById('improvementActions').value;
 
             const emissions = calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, trainKm, planeKm, subwayKm, energyConsumption);
+
+            document.getElementById('totalEmission').value = emissions.totalEmission;
 
             alert(`Emissão calculada:\nCarro: ${emissions.carEmission.toFixed(2)} kg\nÔnibus: ${emissions.busEmission.toFixed(2)} kg\nMoto: ${emissions.motoEmission.toFixed(2)} kg\nCaminhão: ${emissions.truckEmission.toFixed(2)} kg\nTrem: ${emissions.trainEmission.toFixed(2)} kg\nAvião: ${emissions.planeEmission.toFixed(2)} kg\nMetrô: ${emissions.subwayEmission.toFixed(2)} kg\nEnergia: ${emissions.energyEmission.toFixed(2)} kg\nTotal: ${emissions.totalEmission.toFixed(2)} kg\n\nEmissão estimada pelo usuário: ${estimatedEmission} kg\n\nAções para melhorar:\n${improvementActions}`);
 
