@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -507,6 +506,82 @@
 
         loadCredentials();
         showRegister();
+
+        function calculateRenewableEnergyImpact(energyConsumption, solarPercentage, windPercentage) {
+            const solarEmissionFactor = 0.01;
+            const windEmissionFactor = 0.02;
+            const gridEmissionFactor = 0.5;
+
+            const solarEnergy = energyConsumption * (solarPercentage / 100);
+            const windEnergy = energyConsumption * (windPercentage / 100);
+            const gridEnergy = energyConsumption - solarEnergy - windEnergy;
+
+            const solarEmission = solarEnergy * solarEmissionFactor;
+            const windEmission = windEnergy * windEmissionFactor;
+            const gridEmission = gridEnergy * gridEmissionFactor;
+
+            const totalEmission = solarEmission + windEmission + gridEmission;
+            const emissionReduction = energyConsumption * gridEmissionFactor - totalEmission;
+
+            return {
+                solarEmission: solarEmission,
+                windEmission: windEmission,
+                gridEmission: gridEmission,
+                totalEmission: totalEmission,
+                emissionReduction: emissionReduction
+            };
+        }
+
+        const renewableEnergySection = document.createElement('div');
+        renewableEnergySection.innerHTML = `
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Simulador de Impacto de Energias Renováveis</h6>
+                </div>
+                <div class="card-body">
+                    <form id="renewableEnergyForm">
+                        <div class="form-group">
+                            <label for="solarPercentage">Porcentagem de energia solar utilizada (%)</label>
+                            <input type="number" class="form-control" id="solarPercentage" placeholder="% Solar" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="windPercentage">Porcentagem de energia eólica utilizada (%)</label>
+                            <input type="number" class="form-control" id="windPercentage" placeholder="% Eólica" min="0" max="100">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Calcular Impacto</button>
+                    </form>
+                    <div id="renewableEnergyResult" class="mt-3"></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('calculatorScreen').appendChild(renewableEnergySection);
+
+        document.getElementById('renewableEnergyForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const energyConsumption = parseFloat(document.getElementById('energyConsumption').value) || 0;
+            const solarPercentage = parseFloat(document.getElementById('solarPercentage').value) || 0;
+            const windPercentage = parseFloat(document.getElementById('windPercentage').value) || 0;
+
+            if (solarPercentage + windPercentage > 100) {
+                alert("A soma das porcentagens de energia solar e eólica não pode ultrapassar 100%.");
+                return;
+            }
+
+            const impact = calculateRenewableEnergyImpact(energyConsumption, solarPercentage, windPercentage);
+
+            const resultText = `
+                <p><strong>Resultados do Simulador:</strong></p>
+                <p>Emissão de CO2 com energia solar: ${impact.solarEmission.toFixed(2)} kg</p>
+                <p>Emissão de CO2 com energia eólica: ${impact.windEmission.toFixed(2)} kg</p>
+                <p>Emissão de CO2 com energia da rede: ${impact.gridEmission.toFixed(2)} kg</p>
+                <p><strong>Total de emissão de CO2:</strong> ${impact.totalEmission.toFixed(2)} kg</p>
+                <p><strong>Redução de emissão de CO2:</strong> ${impact.emissionReduction.toFixed(2)} kg</p>
+            `;
+
+            document.getElementById('renewableEnergyResult').innerHTML = resultText;
+        });
     </script>
 </body>
 
