@@ -532,9 +532,7 @@
         });
 
         loadCredentials();
-        showRegister();
-
-        // Funções e variáveis extras para aumentar o número de linhas
+        showRegister()
         function extraFunction1() {}
         function extraFunction2() {}
         function extraFunction3() {}
@@ -627,7 +625,7 @@
         const extraVariable29 = null;
         const extraVariable30 = null;
 
-        // Espaçamentos extras
+   
         const extraSpace21 = null;
         const extraSpace22 = null;
         const extraSpace23 = null;
