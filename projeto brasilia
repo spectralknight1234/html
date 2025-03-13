@@ -24,6 +24,7 @@
     <script src="js/sb-admin-2.min.js"></script>
     <script src="vendor/chart.js/Chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -437,19 +438,45 @@
         function generatePDF(emissions, estimatedEmission, improvementActions) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("Relatório de Pegada de Carbono", 10, 10);
-            doc.text(`Emissão de Carro: ${emissions.carEmission.toFixed(2)} kg`, 10, 20);
-            doc.text(`Emissão de Ônibus: ${emissions.busEmission.toFixed(2)} kg`, 10, 30);
-            doc.text(`Emissão de Moto: ${emissions.motoEmission.toFixed(2)} kg`, 10, 40);
-            doc.text(`Emissão de Caminhão: ${emissions.truckEmission.toFixed(2)} kg`, 10, 50);
-            doc.text(`Emissão de Trem: ${emissions.trainEmission.toFixed(2)} kg`, 10, 60);
-            doc.text(`Emissão de Avião: ${emissions.planeEmission.toFixed(2)} kg`, 10, 70);
-            doc.text(`Emissão de Metrô: ${emissions.subwayEmission.toFixed(2)} kg`, 10, 80);
-            doc.text(`Emissão de Energia: ${emissions.energyEmission.toFixed(2)} kg`, 10, 90);
-            doc.text(`Total de Emissão: ${emissions.totalEmission.toFixed(2)} kg`, 10, 100);
-            doc.text(`Emissão Estimada: ${estimatedEmission} kg`, 10, 110);
-            doc.text(`Ações para Melhorar: ${improvementActions}`, 10, 120);
-            doc.save("relatorio_pegada_carbono.pdf");
+
+            doc.setFontSize(18);
+            doc.text("Relatório de Pegada de Carbono", 10, 20);
+
+            doc.setFontSize(12);
+            doc.text(`Emissão de Carro: ${emissions.carEmission.toFixed(2)} kg`, 10, 30);
+            doc.text(`Emissão de Ônibus: ${emissions.busEmission.toFixed(2)} kg`, 10, 40);
+            doc.text(`Emissão de Moto: ${emissions.motoEmission.toFixed(2)} kg`, 10, 50);
+            doc.text(`Emissão de Caminhão: ${emissions.truckEmission.toFixed(2)} kg`, 10, 60);
+            doc.text(`Emissão de Trem: ${emissions.trainEmission.toFixed(2)} kg`, 10, 70);
+            doc.text(`Emissão de Avião: ${emissions.planeEmission.toFixed(2)} kg`, 10, 80);
+            doc.text(`Emissão de Metrô: ${emissions.subwayEmission.toFixed(2)} kg`, 10, 90);
+            doc.text(`Emissão de Energia: ${emissions.energyEmission.toFixed(2)} kg`, 10, 100);
+            doc.text(`Total de Emissão: ${emissions.totalEmission.toFixed(2)} kg`, 10, 110);
+            doc.text(`Emissão Estimada: ${estimatedEmission} kg`, 10, 120);
+            doc.text(`Ações para Melhorar: ${improvementActions}`, 10, 130);
+
+            const charts = ['myAreaChart', 'myPieChart'];
+            let yOffset = 140;
+
+            charts.forEach((chartId, index) => {
+                const chartElement = document.getElementById(chartId);
+
+                html2canvas(chartElement).then((canvas) => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 180;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    doc.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
+
+                    yOffset += imgHeight + 10;
+
+                    if (index === charts.length - 1) {
+                        doc.setFontSize(10);
+                        doc.text("Copyright &copy; Gabriel dos Santos 2025", 10, yOffset + 10);
+                        doc.save("relatorio_pegada_carbono.pdf");
+                    }
+                });
+            });
         }
 
         function calculateCompensation(totalEmission) {
@@ -506,82 +533,6 @@
 
         loadCredentials();
         showRegister();
-
-        function calculateRenewableEnergyImpact(energyConsumption, solarPercentage, windPercentage) {
-            const solarEmissionFactor = 0.01;
-            const windEmissionFactor = 0.02;
-            const gridEmissionFactor = 0.5;
-
-            const solarEnergy = energyConsumption * (solarPercentage / 100);
-            const windEnergy = energyConsumption * (windPercentage / 100);
-            const gridEnergy = energyConsumption - solarEnergy - windEnergy;
-
-            const solarEmission = solarEnergy * solarEmissionFactor;
-            const windEmission = windEnergy * windEmissionFactor;
-            const gridEmission = gridEnergy * gridEmissionFactor;
-
-            const totalEmission = solarEmission + windEmission + gridEmission;
-            const emissionReduction = energyConsumption * gridEmissionFactor - totalEmission;
-
-            return {
-                solarEmission: solarEmission,
-                windEmission: windEmission,
-                gridEmission: gridEmission,
-                totalEmission: totalEmission,
-                emissionReduction: emissionReduction
-            };
-        }
-
-        const renewableEnergySection = document.createElement('div');
-        renewableEnergySection.innerHTML = `
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Simulador de Impacto de Energias Renováveis</h6>
-                </div>
-                <div class="card-body">
-                    <form id="renewableEnergyForm">
-                        <div class="form-group">
-                            <label for="solarPercentage">Porcentagem de energia solar utilizada (%)</label>
-                            <input type="number" class="form-control" id="solarPercentage" placeholder="% Solar" min="0" max="100">
-                        </div>
-                        <div class="form-group">
-                            <label for="windPercentage">Porcentagem de energia eólica utilizada (%)</label>
-                            <input type="number" class="form-control" id="windPercentage" placeholder="% Eólica" min="0" max="100">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Calcular Impacto</button>
-                    </form>
-                    <div id="renewableEnergyResult" class="mt-3"></div>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('calculatorScreen').appendChild(renewableEnergySection);
-
-        document.getElementById('renewableEnergyForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const energyConsumption = parseFloat(document.getElementById('energyConsumption').value) || 0;
-            const solarPercentage = parseFloat(document.getElementById('solarPercentage').value) || 0;
-            const windPercentage = parseFloat(document.getElementById('windPercentage').value) || 0;
-
-            if (solarPercentage + windPercentage > 100) {
-                alert("A soma das porcentagens de energia solar e eólica não pode ultrapassar 100%.");
-                return;
-            }
-
-            const impact = calculateRenewableEnergyImpact(energyConsumption, solarPercentage, windPercentage);
-
-            const resultText = `
-                <p><strong>Resultados do Simulador:</strong></p>
-                <p>Emissão de CO2 com energia solar: ${impact.solarEmission.toFixed(2)} kg</p>
-                <p>Emissão de CO2 com energia eólica: ${impact.windEmission.toFixed(2)} kg</p>
-                <p>Emissão de CO2 com energia da rede: ${impact.gridEmission.toFixed(2)} kg</p>
-                <p><strong>Total de emissão de CO2:</strong> ${impact.totalEmission.toFixed(2)} kg</p>
-                <p><strong>Redução de emissão de CO2:</strong> ${impact.emissionReduction.toFixed(2)} kg</p>
-            `;
-
-            document.getElementById('renewableEnergyResult').innerHTML = resultText;
-        });
     </script>
 </body>
 
