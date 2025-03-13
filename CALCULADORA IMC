@@ -91,6 +91,19 @@
             background-color: #e8f5e9;
             color: #2e7d32;
         }
+        .history-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .history-table th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 
@@ -129,8 +142,32 @@
             <div class="chart-container">
                 <canvas id="obesityChart"></canvas>
             </div>
+            <div class="chart-container">
+                <canvas id="evolutionChart"></canvas>
+            </div>
             <div id="map"></div>
             <button type="button" class="btn btn-secondary" onclick="showCalculatorScreen()">Voltar para a Calculadora</button>
+        </div>
+
+        <!-- Tela de histórico -->
+        <div id="step3" class="step">
+            <h2>Histórico de Cálculos</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Idade</th>
+                        <th>Altura (m)</th>
+                        <th>Peso (kg)</th>
+                        <th>IMC</th>
+                        <th>Risco de Pressão</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" onclick="showCalculatorScreen()">Voltar para a Calculadora</button>
+            <button type="button" class="btn btn-primary" onclick="exportHistory()">Exportar Histórico</button>
         </div>
     </div>
 
@@ -186,6 +223,52 @@
                         title: {
                             display: true,
                             text: 'Continente',
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Configuração do gráfico de evolução
+        const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
+        const evolutionChart = new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Evolução do IMC',
+                    data: [],
+                    borderColor: '#007bff',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolução do IMC ao Longo do Tempo',
+                        font: { size: 18 }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'IMC',
+                            font: { size: 14 }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Data',
                             font: { size: 14 }
                         }
                     }
@@ -249,16 +332,25 @@
 
         function showCalculatorScreen() {
             document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.remove('active');
             document.getElementById('step1').classList.add('active');
+        }
+
+        function showHistoryScreen() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
+            updateHistoryTable();
         }
 
         // Função para calcular o IMC
         function calcularIMC() {
+            const idade = parseInt(document.getElementById("idade").value);
             const altura = parseFloat(document.getElementById("altura").value);
             const peso = parseFloat(document.getElementById("peso").value);
 
-            if (isNaN(altura) || isNaN(peso) || altura <= 0 || peso <= 0) {
-                alert("Por favor, insira valores válidos para altura e peso.");
+            if (isNaN(idade) || isNaN(altura) || isNaN(peso) || altura <= 0 || peso <= 0) {
+                alert("Por favor, insira valores válidos para idade, altura e peso.");
                 return;
             }
 
@@ -282,6 +374,8 @@
 
             document.getElementById("resultado").innerHTML = `Seu IMC é <strong>${imc.toFixed(2)}</strong> (${categoria}).`;
             document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> ${dicas}`;
+
+            saveCalculation({ idade, altura, peso, imc, risco: null });
         }
 
         // Função para calcular o risco de pressão arterial
@@ -304,7 +398,61 @@
 
             document.getElementById("resultado").innerHTML = `Chance de aumento de pressão arterial: <strong>${risco}</strong>.`;
             document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> Controle o peso e faça exames periódicos.`;
+
+            saveCalculation({ idade, altura, peso, imc: null, risco });
         }
+
+        // Função para salvar cálculos no histórico
+        function saveCalculation(calculation) {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            calculation.date = new Date().toLocaleString();
+            history.push(calculation);
+            localStorage.setItem('history', JSON.stringify(history));
+            updateEvolutionChart();
+        }
+
+        // Função para atualizar o gráfico de evolução
+        function updateEvolutionChart() {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            const labels = history.map(entry => entry.date);
+            const data = history.map(entry => entry.imc).filter(imc => imc !== null);
+            evolutionChart.data.labels = labels;
+            evolutionChart.data.datasets[0].data = data;
+            evolutionChart.update();
+        }
+
+        // Função para atualizar a tabela de histórico
+        function updateHistoryTable() {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            const historyBody = document.getElementById('historyBody');
+            historyBody.innerHTML = history.map(entry => `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td>${entry.idade}</td>
+                    <td>${entry.altura}</td>
+                    <td>${entry.peso}</td>
+                    <td>${entry.imc ? entry.imc.toFixed(2) : '-'}</td>
+                    <td>${entry.risco || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Função para exportar o histórico como JSON
+        function exportHistory() {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            const dataStr = JSON.stringify(history, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'historico_calculos.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Inicialização
+        updateEvolutionChart();
+        updateHistoryTable();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
