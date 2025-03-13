@@ -64,25 +64,78 @@
         .chart-container {
             margin-top: 20px;
         }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        .custom-alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .custom-alert.error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .custom-alert.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
     </style>
 </head>
 
-<body onload="loadCredentials()">
+<body>
     <div class="container">
         <h1>Calculadora de IMC e Pressão Arterial</h1>
-        <form id="imcForm">
-        </form>
-        <div id="resultado" class="result"></div>
-        <div id="dicas" class="tips"></div>
 
-        <div class="chart-container">
-            <canvas id="obesityChart"></canvas>
+        <!-- Tela inicial: Perguntas para calcular IMC e pressão arterial -->
+        <div id="step1" class="step active">
+            <form id="imcForm">
+                <div class="mb-3">
+                    <label for="idade" class="form-label">Idade:</label>
+                    <input type="number" id="idade" class="form-control" placeholder="Digite sua idade" required>
+                    <div id="idadeError" class="custom-alert error">Por favor, insira uma idade válida.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="altura" class="form-label">Altura (em metros):</label>
+                    <input type="number" step="0.01" id="altura" class="form-control" placeholder="Ex: 1.75" required>
+                    <div id="alturaError" class="custom-alert error">Por favor, insira uma altura válida.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="peso" class="form-label">Peso (em kg):</label>
+                    <input type="number" step="0.1" id="peso" class="form-control" placeholder="Ex: 70.5" required>
+                    <div id="pesoError" class="custom-alert error">Por favor, insira um peso válido.</div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calcularIMC()">Calcular IMC</button>
+                <button type="button" class="btn btn-danger" onclick="calcularPressao()">Calcular Risco de Pressão Arterial</button>
+            </form>
+            <div id="resultado" class="result"></div>
+            <div id="dicas" class="tips"></div>
+            <button type="button" class="btn btn-success" onclick="showResultsScreen()">Ver Gráficos e Mapa</button>
         </div>
 
-        <div id="map"></div>
+        <!-- Tela de resultados: Gráfico e mapa -->
+        <div id="step2" class="step">
+            <div class="chart-container">
+                <canvas id="obesityChart"></canvas>
+            </div>
+            <div id="map"></div>
+            <button type="button" class="btn btn-secondary" onclick="showCalculatorScreen()">Voltar para a Calculadora</button>
+        </div>
     </div>
 
     <script>
+        // Dados fictícios de obesidade por continente
         const obesityData = {
             labels: ["América do Norte", "América do Sul", "Europa", "Ásia", "África", "Oceania"],
             datasets: [{
@@ -95,6 +148,7 @@
             }]
         };
 
+        // Configuração do gráfico de barras
         const ctx = document.getElementById('obesityChart').getContext('2d');
         const obesityChart = new Chart(ctx, {
             type: 'bar',
@@ -139,6 +193,7 @@
             }
         });
 
+        // Configuração do mapa
         const map = L.map('map', {
             zoomControl: false,
             dragging: false,
@@ -153,10 +208,12 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
+        // Dados fictícios de obesidade por país
         const obesityRates = {
             "USA": 36, "BRA": 22, "FRA": 20, "CHN": 15, "NGA": 10, "AUS": 30
         };
 
+        // Carregar dados GeoJSON e adicionar ao mapa
         fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
             .then(response => response.json())
             .then(data => {
@@ -176,6 +233,7 @@
                 });
             });
 
+        // Função para definir a cor com base na taxa de obesidade
         function getColor(rate) {
             if (rate >= 30) return "#FF0000";
             if (rate >= 20) return "#FFA500";
@@ -183,17 +241,70 @@
             return "#00FF00";
         }
 
-        async function fetchObesityData() {
-            try {
-                const response = await fetch('https://api.worldbank.org/v2/country/all/indicator/SH.STA.OBES?format=json');
-                const data = await response.json();
-                console.log('Dados da API:', data);
-            } catch (error) {
-                console.error('Erro ao buscar dados da API:', error);
-            }
+        // Função para alternar entre as telas
+        function showResultsScreen() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
         }
 
-        fetchObesityData();
+        function showCalculatorScreen() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+        }
+
+        // Função para calcular o IMC
+        function calcularIMC() {
+            const altura = parseFloat(document.getElementById("altura").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+
+            if (isNaN(altura) || isNaN(peso) || altura <= 0 || peso <= 0) {
+                alert("Por favor, insira valores válidos para altura e peso.");
+                return;
+            }
+
+            const imc = peso / (altura * altura);
+            let categoria = "";
+            let dicas = "";
+
+            if (imc < 18.5) {
+                categoria = "Abaixo do peso";
+                dicas = "Consuma uma dieta equilibrada com calorias suficientes. Consulte um nutricionista.";
+            } else if (imc >= 18.5 && imc < 24.9) {
+                categoria = "Peso normal";
+                dicas = "Mantenha uma alimentação saudável e pratique atividades físicas regularmente.";
+            } else if (imc >= 25 && imc < 29.9) {
+                categoria = "Sobrepeso";
+                dicas = "Reduza o consumo de alimentos ultraprocessados e faça exercícios regularmente.";
+            } else if (imc >= 30) {
+                categoria = "Obesidade";
+                dicas = "Procure orientação médica e adote mudanças no estilo de vida, incluindo uma dieta controlada.";
+            }
+
+            document.getElementById("resultado").innerHTML = `Seu IMC é <strong>${imc.toFixed(2)}</strong> (${categoria}).`;
+            document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> ${dicas}`;
+        }
+
+        // Função para calcular o risco de pressão arterial
+        function calcularPressao() {
+            const idade = parseInt(document.getElementById("idade").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+            const altura = parseFloat(document.getElementById("altura").value);
+
+            if (isNaN(idade) || isNaN(peso) || isNaN(altura)) {
+                alert("Por favor, insira todos os dados corretamente.");
+                return;
+            }
+
+            let risco = "Baixo";
+            if (idade > 40 && peso > 85) {
+                risco = "Alto";
+            } else if (idade > 30 && peso > 75) {
+                risco = "Moderado";
+            }
+
+            document.getElementById("resultado").innerHTML = `Chance de aumento de pressão arterial: <strong>${risco}</strong>.`;
+            document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> Controle o peso e faça exames periódicos.`;
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
