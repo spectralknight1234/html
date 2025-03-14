@@ -104,6 +104,9 @@
                                                         for="rememberMe">Lembrar-me</label>
                                                 </div>
                                             </div>
+                                            <div id="loginError" class="text-danger small mb-3" style="display: none;">
+                                                E-mail ou senha incorretos.
+                                            </div>
                                             <button type="submit" class="btn btn-primary btn-user btn-block">
                                                 Login
                                             </button>
@@ -402,15 +405,22 @@
             const senha = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
 
-            if (rememberMe) {
-                saveCredentials(email, senha);
-            } else {
-                localStorage.removeItem('savedEmail');
-                localStorage.removeItem('savedPassword');
-            }
+            const validEmail = "usuario@exemplo.com";
+            const validPassword = "senha123";
 
-            alert('Login simulado com sucesso!');
-            showCalculator();
+            if (email === validEmail && senha === validPassword) {
+                if (rememberMe) {
+                    saveCredentials(email, senha);
+                } else {
+                    localStorage.removeItem('savedEmail');
+                    localStorage.removeItem('savedPassword');
+                }
+                document.getElementById('loginError').style.display = 'none';
+                alert('Login simulado com sucesso!');
+                showCalculator();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
         });
 
         function calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, trainKm, planeKm, subwayKm, energyConsumption) {
@@ -457,7 +467,7 @@
         }
 
         function getNationalAverage() {
-            return 200; // Média nacional fictícia
+            return 200;
         }
 
         function generatePersonalizedTips(emissions) {
