@@ -12,7 +12,98 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* Estilos anteriores */
+        body {
+            background: linear-gradient(to bottom, #f0f8ff, #ffffff);
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s ease-in-out;
+        }
+        .btn:hover {
+            transform: scale(1.1);
+        }
+        .btn-primary {
+            background-color: #007bff;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .tips {
+            margin-top: 20px;
+            color: #555;
+        }
+        #map {
+            height: 400px;
+            margin-top: 20px;
+            border-radius: 10px;
+            background-color: #e0e0e0;
+        }
+        .chart-container {
+            margin-top: 20px;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        .custom-alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .custom-alert.error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .custom-alert.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .history-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .history-table th {
+            background-color: #f2f2f2;
+        }
         .notification {
             position: fixed;
             bottom: 20px;
@@ -33,345 +124,441 @@
 
 <body>
     <div class="container">
-        <!-- Código anterior -->
+        <h1>Calculadora de IMC e Pressão Arterial</h1>
+
+        <!-- Tela inicial: Perguntas para calcular IMC e pressão arterial -->
+        <div id="step1" class="step active">
+            <form id="imcForm">
+                <div class="mb-3">
+                    <label for="idade" class="form-label">Idade:</label>
+                    <input type="number" id="idade" class="form-control" placeholder="Digite sua idade" required>
+                    <div id="idadeError" class="custom-alert error">Por favor, insira uma idade válida.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="altura" class="form-label">Altura (em metros):</label>
+                    <input type="number" step="0.01" id="altura" class="form-control" placeholder="Ex: 1.75" required>
+                    <div id="alturaError" class="custom-alert error">Por favor, insira uma altura válida.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="peso" class="form-label">Peso (em kg):</label>
+                    <input type="number" step="0.1" id="peso" class="form-control" placeholder="Ex: 70.5" required>
+                    <div id="pesoError" class="custom-alert error">Por favor, insira um peso válido.</div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calcularIMC()">Calcular IMC</button>
+                <button type="button" class="btn btn-danger" onclick="calcularPressao()">Calcular Risco de Pressão Arterial</button>
+                <button type="button" class="btn btn-info" onclick="showCaloriesScreen()">Calcular Calorias Diárias</button>
+            </form>
+            <div id="resultado" class="result"></div>
+            <div id="dicas" class="tips"></div>
+            <button type="button" class="btn btn-success" onclick="showResultsScreen()">Ver Gráficos e Mapa</button>
+            <button type="button" class="btn btn-warning" onclick="showHistoryScreen()">Histórico</button>
+        </div>
+
+        <!-- Tela de resultados: Gráfico e mapa -->
+        <div id="step2" class="step">
+            <div class="chart-container">
+                <canvas id="obesityChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="evolutionChart"></canvas>
+            </div>
+            <div id="map"></div>
+            <button type="button" class="btn btn-secondary" onclick="showCalculatorScreen()">Voltar para a Calculadora</button>
+        </div>
+
+        <!-- Tela de histórico -->
+        <div id="step3" class="step">
+            <h2>Histórico de Cálculos</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Idade</th>
+                        <th>Altura (m)</th>
+                        <th>Peso (kg)</th>
+                        <th>IMC</th>
+                        <th>Risco de Pressão</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" onclick="showCalculatorScreen()">Voltar para a Calculadora</button>
+            <button type="button" class="btn btn-primary" onclick="exportHistory()">Exportar Histórico</button>
+        </div>
+
+        <!-- Tela de calorias diárias -->
+        <div id="step4" class="step">
+            <h2>Calculadora de Calorias Diárias</h2>
+            <form id="caloriesForm">
+                <div class="mb-3">
+                    <label for="sexo" class="form-label">Sexo:</label>
+                    <select id="sexo" class="form-control" required>
+                        <option value="masculino">Masculino</option>
+                        <option value="feminino">Feminino</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="nivelAtividade" class="form-label">Nível de Atividade:</label>
+                    <select id="nivelAtividade" class="form-control" required>
+                        <option value="sedentario">Sedentário</option>
+                        <option value="leve">Leve</option>
+                        <option value="moderado">Moderado</option>
+                        <option value="ativo">Ativo</option>
+                        <option value="muitoAtivo">Muito Ativo</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calcularCalorias()">Calcular Calorias</button>
+            </form>
+            <div id="caloriesResult" class="result"></div>
+            <button type="button" class="btn btn-secondary" onclick="showCalculatorScreen()">Voltar para a Calculadora</button>
+        </div>
     </div>
 
+    <!-- Notificação -->
+    <div id="notification" class="notification">Lembre-se de se exercitar hoje!</div>
+
     <script>
-        // Funções anteriores
+        // Dados fictícios de obesidade por continente
+        const obesityData = {
+            labels: ["América do Norte", "América do Sul", "Europa", "Ásia", "África", "Oceania"],
+            datasets: [{
+                label: "Taxa de Obesidade (%)",
+                data: [36, 22, 20, 15, 10, 30],
+                backgroundColor: [
+                    "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"
+                ],
+                borderWidth: 1
+            }]
+        };
 
-        // 1. Autenticação de usuário
-        function registerUser() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            localStorage.setItem('user', JSON.stringify({ email, password }));
-            alert('Usuário registrado com sucesso!');
-        }
-
-        function loginUser() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user && user.email === email && user.password === password) {
-                alert('Login bem-sucedido!');
-            } else {
-                alert('E-mail ou senha incorretos.');
-            }
-        }
-
-        // 2. Perfil do usuário
-        function updateProfile() {
-            const name = document.getElementById('profileName').value;
-            const age = document.getElementById('profileAge').value;
-            localStorage.setItem('profile', JSON.stringify({ name, age }));
-            alert('Perfil atualizado!');
-        }
-
-        // 3. Lembretes diários
-        function showReminder() {
-            const reminder = document.getElementById('reminder');
-            reminder.textContent = 'Lembre-se de beber água!';
-            reminder.style.display = 'block';
-            setTimeout(() => {
-                reminder.style.display = 'none';
-            }, 5000);
-        }
-
-        // 4. Calculadora de hidratação
-        function calculateWaterIntake() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const waterIntake = weight * 0.035; // 35 ml por kg de peso
-            alert(`Você deve beber ${waterIntake.toFixed(2)} litros de água por dia.`);
-        }
-
-        // 5. Calculadora de gasto calórico por atividade
-        function calculateCaloriesBurned() {
-            const activity = document.getElementById('activity').value;
-            const duration = parseFloat(document.getElementById('duration').value);
-            const weight = parseFloat(document.getElementById('peso').value);
-            let caloriesBurned;
-            switch (activity) {
-                case 'caminhada':
-                    caloriesBurned = duration * weight * 0.035;
-                    break;
-                case 'corrida':
-                    caloriesBurned = duration * weight * 0.065;
-                    break;
-                default:
-                    caloriesBurned = 0;
-            }
-            alert(`Você queimou ${caloriesBurned.toFixed(2)} calorias.`);
-        }
-
-        // 6. Plano de exercícios personalizado
-        function suggestExercises() {
-            const imc = parseFloat(document.getElementById('imc').value);
-            let exercises;
-            if (imc < 18.5) {
-                exercises = 'Exercícios de força e ganho de massa muscular.';
-            } else if (imc >= 18.5 && imc < 24.9) {
-                exercises = 'Exercícios cardiovasculares e de manutenção.';
-            } else {
-                exercises = 'Exercícios aeróbicos e de perda de peso.';
-            }
-            alert(`Sugestão de exercícios: ${exercises}`);
-        }
-
-        // 7. Integração com API de clima
-        async function getWeather() {
-            const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=São Paulo&appid=SUA_CHAVE_API');
-            const data = await response.json();
-            alert(`Clima atual: ${data.weather[0].description}`);
-        }
-
-        // 8. Gráfico de comparação de IMC
-        function renderComparisonChart() {
-            const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
-            new Chart(comparisonCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Seu IMC', 'Média'],
-                    datasets: [{
-                        label: 'IMC',
-                        data: [25, 22], // Exemplo
-                        backgroundColor: ['#007bff', '#28a745']
-                    }]
+        // Configuração do gráfico de barras
+        const ctx = document.getElementById('obesityChart').getContext('2d');
+        const obesityChart = new Chart(ctx, {
+            type: 'bar',
+            data: obesityData,
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Taxa de Obesidade por Continente',
+                        font: { size: 18 }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: (value) => `${value}%`,
+                        font: { size: 14, weight: 'bold' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Taxa de Obesidade (%)',
+                            font: { size: 14 }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Continente',
+                            font: { size: 14 }
+                        }
+                    }
                 }
+            }
+        });
+
+        // Configuração do gráfico de evolução
+        const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
+        const evolutionChart = new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Evolução do IMC',
+                    data: [],
+                    borderColor: '#007bff',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolução do IMC ao Longo do Tempo',
+                        font: { size: 18 }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'IMC',
+                            font: { size: 14 }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Data',
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Configuração do mapa
+        const map = L.map('map', {
+            zoomControl: false,
+            dragging: false,
+            doubleClickZoom: false,
+            scrollWheelZoom: false,
+            touchZoom: false,
+            boxZoom: false,
+            keyboard: false
+        }).setView([20, 0], 2);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Dados fictícios de obesidade por país
+        const obesityRates = {
+            "USA": 36, "BRA": 22, "FRA": 20, "CHN": 15, "NGA": 10, "AUS": 30
+        };
+
+        // Carregar dados GeoJSON e adicionar ao mapa
+        fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+            .then(response => response.json())
+            .then(data => {
+                data.features.forEach(feature => {
+                    const countryCode = feature.properties.iso_a3;
+                    const rate = obesityRates[countryCode];
+                    if (rate) {
+                        L.geoJSON(feature, {
+                            style: {
+                                fillColor: getColor(rate),
+                                fillOpacity: 0.6,
+                                color: "#000",
+                                weight: 1
+                            }
+                        }).bindTooltip(`${feature.properties.name}: ${rate}%`, { permanent: false, direction: 'top' }).addTo(map);
+                    }
+                });
             });
+
+        // Função para definir a cor com base na taxa de obesidade
+        function getColor(rate) {
+            if (rate >= 30) return "#FF0000";
+            if (rate >= 20) return "#FFA500";
+            if (rate >= 10) return "#FFFF00";
+            return "#00FF00";
         }
 
-        // 9. Exportação de dados para CSV
-        function exportToCSV() {
+        // Função para alternar entre as telas
+        function showResultsScreen() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+        }
+
+        function showCalculatorScreen() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.remove('active');
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+        }
+
+        function showHistoryScreen() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
+            updateHistoryTable();
+        }
+
+        function showCaloriesScreen() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.remove('active');
+            document.getElementById('step4').classList.add('active');
+        }
+
+        // Função para calcular o IMC
+        function calcularIMC() {
+            const idade = parseInt(document.getElementById("idade").value);
+            const altura = parseFloat(document.getElementById("altura").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+
+            if (isNaN(idade) || isNaN(altura) || isNaN(peso) || altura <= 0 || peso <= 0) {
+                alert("Por favor, insira valores válidos para idade, altura e peso.");
+                return;
+            }
+
+            const imc = peso / (altura * altura);
+            let categoria = "";
+            let dicas = "";
+
+            if (imc < 18.5) {
+                categoria = "Abaixo do peso";
+                dicas = "Consuma uma dieta equilibrada com calorias suficientes. Consulte um nutricionista.";
+            } else if (imc >= 18.5 && imc < 24.9) {
+                categoria = "Peso normal";
+                dicas = "Mantenha uma alimentação saudável e pratique atividades físicas regularmente.";
+            } else if (imc >= 25 && imc < 29.9) {
+                categoria = "Sobrepeso";
+                dicas = "Reduza o consumo de alimentos ultraprocessados e faça exercícios regularmente.";
+            } else if (imc >= 30) {
+                categoria = "Obesidade";
+                dicas = "Procure orientação médica e adote mudanças no estilo de vida, incluindo uma dieta controlada.";
+            }
+
+            document.getElementById("resultado").innerHTML = `Seu IMC é <strong>${imc.toFixed(2)}</strong> (${categoria}).`;
+            document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> ${dicas}`;
+
+            saveCalculation({ idade, altura, peso, imc, risco: null });
+        }
+
+        // Função para calcular o risco de pressão arterial
+        function calcularPressao() {
+            const idade = parseInt(document.getElementById("idade").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+            const altura = parseFloat(document.getElementById("altura").value);
+
+            if (isNaN(idade) || isNaN(peso) || isNaN(altura)) {
+                alert("Por favor, insira todos os dados corretamente.");
+                return;
+            }
+
+            let risco = "Baixo";
+            if (idade > 40 && peso > 85) {
+                risco = "Alto";
+            } else if (idade > 30 && peso > 75) {
+                risco = "Moderado";
+            }
+
+            document.getElementById("resultado").innerHTML = `Chance de aumento de pressão arterial: <strong>${risco}</strong>.`;
+            document.getElementById("dicas").innerHTML = `<strong>Dicas:</strong> Controle o peso e faça exames periódicos.`;
+
+            saveCalculation({ idade, altura, peso, imc: null, risco });
+        }
+
+        // Função para salvar cálculos no histórico
+        function saveCalculation(calculation) {
             const history = JSON.parse(localStorage.getItem('history')) || [];
-            let csv = 'Data,Idade,Altura,Peso,IMC,Risco\n';
-            history.forEach(entry => {
-                csv += `${entry.date},${entry.idade},${entry.altura},${entry.peso},${entry.imc},${entry.risco}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
+            calculation.date = new Date().toLocaleString();
+            history.push(calculation);
+            localStorage.setItem('history', JSON.stringify(history));
+            updateEvolutionChart();
+        }
+
+        // Função para atualizar o gráfico de evolução
+        function updateEvolutionChart() {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            const labels = history.map(entry => entry.date);
+            const data = history.map(entry => entry.imc).filter(imc => imc !== null);
+            evolutionChart.data.labels = labels;
+            evolutionChart.data.datasets[0].data = data;
+            evolutionChart.update();
+        }
+
+        // Função para atualizar a tabela de histórico
+        function updateHistoryTable() {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            const historyBody = document.getElementById('historyBody');
+            historyBody.innerHTML = history.map(entry => `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td>${entry.idade}</td>
+                    <td>${entry.altura}</td>
+                    <td>${entry.peso}</td>
+                    <td>${entry.imc ? entry.imc.toFixed(2) : '-'}</td>
+                    <td>${entry.risco || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Função para exportar o histórico como JSON
+        function exportHistory() {
+            const history = JSON.parse(localStorage.getItem('history')) || [];
+            const dataStr = JSON.stringify(history, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'historico.csv';
+            a.download = 'historico_calculos.json';
             a.click();
+            URL.revokeObjectURL(url);
         }
 
-        // 10. Importação de dados
-        function importData(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const data = e.target.result;
-                localStorage.setItem('history', data);
-                alert('Dados importados com sucesso!');
-            };
-            reader.readAsText(file);
-        }
+        // Função para calcular calorias diárias
+        function calcularCalorias() {
+            const idade = parseInt(document.getElementById("idade").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+            const altura = parseFloat(document.getElementById("altura").value);
+            const sexo = document.getElementById("sexo").value;
+            const nivelAtividade = document.getElementById("nivelAtividade").value;
 
-        // 11. Modo escuro/claro
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        // 12. Idiomas suportados
-        function changeLanguage(lang) {
-            localStorage.setItem('language', lang);
-            alert('Idioma alterado!');
-        }
-
-        // 13. Calculadora de macronutrientes
-        function calculateMacronutrients() {
-            const calories = parseFloat(document.getElementById('calories').value);
-            const carbs = (calories * 0.5) / 4; // 50% de carboidratos
-            const proteins = (calories * 0.3) / 4; // 30% de proteínas
-            const fats = (calories * 0.2) / 9; // 20% de gorduras
-            alert(`Macronutrientes: ${carbs.toFixed(2)}g carboidratos, ${proteins.toFixed(2)}g proteínas, ${fats.toFixed(2)}g gorduras.`);
-        }
-
-        // 14. Lista de alimentos saudáveis
-        function suggestHealthyFoods() {
-            const foods = ['Maçã', 'Banana', 'Frango', 'Salmão', 'Brócolis'];
-            alert(`Alimentos saudáveis: ${foods.join(', ')}`);
-        }
-
-        // 15. Calculadora de sono ideal
-        function calculateSleep() {
-            const age = parseInt(document.getElementById('idade').value);
-            let sleep;
-            if (age < 18) {
-                sleep = '8-10 horas';
-            } else {
-                sleep = '7-9 horas';
+            if (isNaN(idade) || isNaN(peso) || isNaN(altura)) {
+                alert("Por favor, insira todos os dados corretamente.");
+                return;
             }
-            alert(`Sono ideal: ${sleep}`);
-        }
 
-        // 16. Gráfico de progresso
-        function renderProgressChart() {
-            const progressCtx = document.getElementById('progressChart').getContext('2d');
-            new Chart(progressCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
-                    datasets: [{
-                        label: 'Peso (kg)',
-                        data: [70, 68, 67, 66, 65],
-                        borderColor: '#007bff'
-                    }]
-                }
-            });
-        }
-
-        // 17. Calculadora de índice de massa muscular
-        function calculateMuscleMass() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const fatPercentage = parseFloat(document.getElementById('fatPercentage').value);
-            const muscleMass = weight * (1 - fatPercentage / 100);
-            alert(`Massa muscular: ${muscleMass.toFixed(2)} kg`);
-        }
-
-        // 18. Calculadora de taxa de gordura corporal
-        function calculateBodyFat() {
-            const waist = parseFloat(document.getElementById('waist').value);
-            const neck = parseFloat(document.getElementById('neck').value);
-            const height = parseFloat(document.getElementById('altura').value);
-            const bodyFat = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
-            alert(`Taxa de gordura corporal: ${bodyFat.toFixed(2)}%`);
-        }
-
-        // 19. Integração com API de receitas saudáveis
-        async function getHealthyRecipes() {
-            const response = await fetch('https://api.edamam.com/search?q=healthy&app_id=SUA_ID&app_key=SUA_CHAVE');
-            const data = await response.json();
-            alert(`Receita sugerida: ${data.hits[0].recipe.label}`);
-        }
-
-        // 20. Calculadora de gasto energético basal
-        function calculateBMR() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const height = parseFloat(document.getElementById('altura').value);
-            const age = parseInt(document.getElementById('idade').value);
-            const sex = document.getElementById('sexo').value;
-            let bmr;
-            if (sex === 'masculino') {
-                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            let tmb; // Taxa Metabólica Basal
+            if (sexo === "masculino") {
+                tmb = 88.362 + (13.397 * peso) + (4.799 * altura * 100) - (5.677 * idade);
             } else {
-                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+                tmb = 447.593 + (9.247 * peso) + (3.098 * altura * 100) - (4.330 * idade);
             }
-            alert(`Gasto energético basal: ${bmr.toFixed(2)} calorias/dia`);
+
+            let fatorAtividade;
+            switch (nivelAtividade) {
+                case "sedentario":
+                    fatorAtividade = 1.2;
+                    break;
+                case "leve":
+                    fatorAtividade = 1.375;
+                    break;
+                case "moderado":
+                    fatorAtividade = 1.55;
+                    break;
+                case "ativo":
+                    fatorAtividade = 1.725;
+                    break;
+                case "muitoAtivo":
+                    fatorAtividade = 1.9;
+                    break;
+                default:
+                    fatorAtividade = 1.2;
+            }
+
+            const caloriasDiarias = tmb * fatorAtividade;
+            document.getElementById("caloriesResult").innerHTML = `Sua necessidade calórica diária é de <strong>${caloriasDiarias.toFixed(2)} calorias</strong>.`;
         }
 
-        // 21. Calculadora de IMC infantil
-        function calculateChildBMI() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const height = parseFloat(document.getElementById('altura').value);
-            const bmi = weight / (height * height);
-            alert(`IMC infantil: ${bmi.toFixed(2)}`);
-        }
-
-        // 22. Gráfico de calorias consumidas vs. gastas
-        function renderCaloriesChart() {
-            const caloriesCtx = document.getElementById('caloriesChart').getContext('2d');
-            new Chart(caloriesCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Consumidas', 'Gastas'],
-                    datasets: [{
-                        label: 'Calorias',
-                        data: [2000, 1800],
-                        backgroundColor: ['#007bff', '#28a745']
-                    }]
-                }
-            });
-        }
-
-        // 23. Calculadora de tempo para atingir metas
-        function calculateGoalTime() {
-            const currentWeight = parseFloat(document.getElementById('peso').value);
-            const goalWeight = parseFloat(document.getElementById('goalWeight').value);
-            const weightLossPerWeek = parseFloat(document.getElementById('weightLossPerWeek').value);
-            const weeks = (currentWeight - goalWeight) / weightLossPerWeek;
-            alert(`Você atingirá sua meta em ${weeks.toFixed(2)} semanas.`);
-        }
-
-        // 24. Integração com wearables
-        function syncWithWearable() {
-            alert('Sincronizando com wearable...');
-        }
-
-        // 25. Calculadora de índice de massa óssea
-        function calculateBoneMass() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const boneMass = weight * 0.15; // Exemplo fictício
-            alert(`Massa óssea: ${boneMass.toFixed(2)} kg`);
-        }
-
-        // 26. Gráfico de distribuição de macronutrientes
-        function renderMacronutrientsChart() {
-            const macroCtx = document.getElementById('macronutrientsChart').getContext('2d');
-            new Chart(macroCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Carboidratos', 'Proteínas', 'Gorduras'],
-                    datasets: [{
-                        data: [50, 30, 20],
-                        backgroundColor: ['#007bff', '#28a745', '#dc3545']
-                    }]
-                }
-            });
-        }
-
-        // 27. Calculadora de risco cardiovascular
-        function calculateCardiovascularRisk() {
-            const age = parseInt(document.getElementById('idade').value);
-            const weight = parseFloat(document.getElementById('peso').value);
-            const risk = age * weight * 0.01; // Exemplo fictício
-            alert(`Risco cardiovascular: ${risk.toFixed(2)}%`);
-        }
-
-        // 28. Calculadora de índice de massa visceral
-        function calculateVisceralFat() {
-            const waist = parseFloat(document.getElementById('waist').value);
-            const visceralFat = waist * 0.8; // Exemplo fictício
-            alert(`Gordura visceral: ${visceralFat.toFixed(2)}`);
-        }
-
-        // 29. Integração com API de nutrição
-        async function getNutritionInfo() {
-            const response = await fetch('https://api.nutritionix.com/v1_1/item?id=513fceb475b8dbbc21002dc9&appId=SUA_ID&appKey=SUA_CHAVE');
-            const data = await response.json();
-            alert(`Informação nutricional: ${data.item_name}`);
-        }
-
-        // 30. Calculadora de índice de massa magra
-        function calculateLeanMass() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const fatPercentage = parseFloat(document.getElementById('fatPercentage').value);
-            const leanMass = weight * (1 - fatPercentage / 100);
-            alert(`Massa magra: ${leanMass.toFixed(2)} kg`);
-        }
-
-        // 31. Gráfico de histórico de peso
-        function renderWeightHistoryChart() {
-            const weightCtx = document.getElementById('weightHistoryChart').getContext('2d');
-            new Chart(weightCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
-                    datasets: [{
-                        label: 'Peso (kg)',
-                        data: [70, 68, 67, 66, 65],
-                        borderColor: '#007bff'
-                    }]
-                }
-            });
-        }
-
-        // 32. Calculadora de índice de massa corporal ajustado
-        function calculateAdjustedBMI() {
-            const weight = parseFloat(document.getElementById('peso').value);
-            const height = parseFloat(document.getElementById('altura').value);
-            const muscleMass = parseFloat(document.getElementById('muscleMass').value);
-            const adjustedBMI = (weight / (height * height)) * (1 + muscleMass * 0.1); // Exemplo fictício
-            alert(`IMC ajustado: ${adjustedBMI.toFixed(2)}`);
+        // Função para exibir notificações
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
         }
 
         // Inicialização
