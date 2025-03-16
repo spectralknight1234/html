@@ -30,6 +30,7 @@
 
 <body id="page-top">
 
+    <!-- Tela de Registro -->
     <div id="registerScreen" class="bg-gradient-primary">
         <div class="container">
             <div class="row justify-content-center">
@@ -75,6 +76,7 @@
         </div>
     </div>
 
+    <!-- Tela de Login -->
     <div id="loginScreen" class="bg-gradient-primary" style="display: none;">
         <div class="container">
             <div class="row justify-content-center">
@@ -122,6 +124,7 @@
         </div>
     </div>
 
+    <!-- Tela da Calculadora de Pegada de Carbono -->
     <div id="calculatorScreen" style="display: none;">
         <div id="wrapper">
             <div id="content-wrapper" class="d-flex flex-column">
@@ -131,11 +134,12 @@
                             <h1 class="h3 mb-0 text-gray-800">Calculadora de Pegada de Carbono</h1>
                         </div>
 
+                        <!-- Seção de Transporte -->
                         <div class="row">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Informe seus dados</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Informe seus dados de transporte</h6>
                                     </div>
                                     <div class="card-body">
                                         <form id="carbonFootprintForm">
@@ -208,6 +212,7 @@
                             </div>
                         </div>
 
+                        <!-- Seção de Gráficos -->
                         <div class="row">
                             <div class="col-xl-8 col-lg-7">
                                 <div class="card shadow mb-4">
@@ -264,6 +269,7 @@
                             </div>
                         </div>
 
+                        <!-- Seção de Resultados por Região -->
                         <div class="row" id="regionFootprintResult" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -277,6 +283,7 @@
                             </div>
                         </div>
 
+                        <!-- Seção de Comparação Nacional -->
                         <div class="row" id="nationalComparison" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -290,6 +297,7 @@
                             </div>
                         </div>
 
+                        <!-- Seção de Dicas Personalizadas -->
                         <div class="row" id="personalizedTips" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -303,6 +311,7 @@
                             </div>
                         </div>
 
+                        <!-- Seção de Histórico de Cálculos -->
                         <div class="row" id="historySection" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -329,10 +338,12 @@
         </div>
     </div>
 
+    <!-- Botão de Voltar ao Topo -->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
 
+    <!-- Scripts -->
     <script>
         function encryptData(data, key) {
             return CryptoJS.AES.encrypt(data, key).toString();
