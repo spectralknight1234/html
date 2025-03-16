@@ -334,19 +334,172 @@
     </a>
 
     <script>
-        let myAreaChart = null;
-        let myPieChart = null;
+        function encryptData(data, key) {
+            return CryptoJS.AES.encrypt(data, key).toString();
+        }
+
+        function decryptData(data, key) {
+            const bytes = CryptoJS.AES.decrypt(data, key);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+
+        function saveCredentials(email, senha) {
+            const encryptionKey = 'sua_chave_secreta';
+            const encryptedEmail = encryptData(email, encryptionKey);
+            const encryptedPassword = encryptData(senha, encryptionKey);
+            localStorage.setItem('savedEmail', encryptedEmail);
+            localStorage.setItem('savedPassword', encryptedPassword);
+        }
+
+        function loadCredentials() {
+            const encryptionKey = 'sua_chave_secreta';
+            const savedEmail = localStorage.getItem('savedEmail');
+            const savedPassword = localStorage.getItem('savedPassword');
+
+            if (savedEmail && savedPassword) {
+                const decryptedEmail = decryptData(savedEmail, encryptionKey);
+                const decryptedPassword = decryptData(savedPassword, encryptionKey);
+                document.getElementById('loginEmail').value = decryptedEmail;
+                document.getElementById('loginPassword').value = decryptedPassword;
+                document.getElementById('rememberMe').checked = true;
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('registerScreen').style.display = 'block';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('calculatorScreen').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('registerScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('calculatorScreen').style.display = 'none';
+        }
+
+        function showCalculator() {
+            document.getElementById('registerScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('calculatorScreen').style.display = 'block';
+            loadHistory();
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const senha = document.getElementById('registerPassword').value;
+
+            alert('Registro simulado com sucesso!');
+            showLogin();
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            if (rememberMe) {
+                saveCredentials(email, senha);
+            } else {
+                localStorage.removeItem('savedEmail');
+                localStorage.removeItem('savedPassword');
+            }
+
+            alert('Login simulado com sucesso!');
+            showCalculator();
+        });
+
+        function calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, trainKm, planeKm, subwayKm, energyConsumption) {
+            const carEmissionFactor = 0.2;
+            const busEmissionFactor = 0.1;
+            const motoEmissionFactor = 0.15;
+            const truckEmissionFactor = 0.3;
+            const trainEmissionFactor = 0.05;
+            const planeEmissionFactor = 0.25;
+            const subwayEmissionFactor = 0.03;
+            const energyEmissionFactor = 0.1;
+
+            const carEmission = carKm * carEmissionFactor;
+            const busEmission = busKm * busEmissionFactor;
+            const motoEmission = motoKm * motoEmissionFactor;
+            const truckEmission = truckKm * truckEmissionFactor;
+            const trainEmission = trainKm * trainEmissionFactor;
+            const planeEmission = planeKm * planeEmissionFactor;
+            const subwayEmission = subwayKm * subwayEmissionFactor;
+            const energyEmission = energyConsumption * energyEmissionFactor;
+
+            return {
+                carEmission: carEmission,
+                busEmission: busEmission,
+                motoEmission: motoEmission,
+                truckEmission: truckEmission,
+                trainEmission: trainEmission,
+                planeEmission: planeEmission,
+                subwayEmission: subwayEmission,
+                energyEmission: energyEmission,
+                totalEmission: carEmission + busEmission + motoEmission + truckEmission + trainEmission + planeEmission + subwayEmission + energyEmission
+            };
+        }
+
+        function getRegionFootprint(region) {
+            const regionFootprints = {
+                sudeste: 250,
+                sul: 200,
+                "centro-oeste": 180,
+                nordeste: 220,
+                norte: 150
+            };
+            return regionFootprints[region] || 0;
+        }
+
+        function getNationalAverage() {
+            return 200; // Média nacional fictícia
+        }
+
+        function generatePersonalizedTips(emissions) {
+            const tips = [];
+            if (emissions.carEmission > 50) {
+                tips.push("Considere usar transporte público ou bicicleta para reduzir as emissões do carro.");
+            }
+            if (emissions.energyEmission > 100) {
+                tips.push("Troque lâmpadas incandescentes por LED e desligue aparelhos em standby.");
+            }
+            if (emissions.planeEmission > 50) {
+                tips.push("Prefira viagens de trem ou ônibus para distâncias curtas.");
+            }
+            return tips;
+        }
+
+        function saveCalculationToHistory(emissions, region, improvementActions) {
+            const history = JSON.parse(localStorage.getItem('calculationHistory')) || [];
+            history.push({
+                date: new Date().toLocaleString(),
+                emissions: emissions,
+                region: region,
+                improvementActions: improvementActions
+            });
+            localStorage.setItem('calculationHistory', JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('calculationHistory')) || [];
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            history.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${entry.date}</strong>: ${entry.emissions.totalEmission.toFixed(2)} kg de CO2`;
+                historyList.appendChild(li);
+            });
+            document.getElementById('historySection').style.display = 'block';
+        }
 
         function updateCharts(carEmission, busEmission, motoEmission, truckEmission, trainEmission, planeEmission, subwayEmission, energyEmission) {
-            if (myAreaChart) {
-                myAreaChart.destroy();
-            }
-            if (myPieChart) {
-                myPieChart.destroy();
-            }
-
-            var ctx = document.getElementById("myAreaChart").getContext('2d');
-            myAreaChart = new Chart(ctx, {
+            var ctx = document.getElementById("myAreaChart");
+            var myAreaChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ["Carro", "Ônibus", "Moto", "Caminhão", "Trem", "Avião", "Metrô", "Energia"],
@@ -375,8 +528,8 @@
                 }
             });
 
-            var ctx2 = document.getElementById("myPieChart").getContext('2d');
-            myPieChart = new Chart(ctx2, {
+            var ctx = document.getElementById("myPieChart");
+            var myPieChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: ["Carro", "Ônibus", "Moto", "Caminhão", "Trem", "Avião", "Metrô", "Energia"],
@@ -399,6 +552,69 @@
             });
         }
 
+        function generatePDF(emissions, estimatedEmission, improvementActions) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text("Relatório de Pegada de Carbono", 10, 20);
+
+            doc.setFontSize(12);
+            doc.text(`Emissão de Carro: ${emissions.carEmission.toFixed(2)} kg`, 10, 30);
+            doc.text(`Emissão de Ônibus: ${emissions.busEmission.toFixed(2)} kg`, 10, 40);
+            doc.text(`Emissão de Moto: ${emissions.motoEmission.toFixed(2)} kg`, 10, 50);
+            doc.text(`Emissão de Caminhão: ${emissions.truckEmission.toFixed(2)} kg`, 10, 60);
+            doc.text(`Emissão de Trem: ${emissions.trainEmission.toFixed(2)} kg`, 10, 70);
+            doc.text(`Emissão de Avião: ${emissions.planeEmission.toFixed(2)} kg`, 10, 80);
+            doc.text(`Emissão de Metrô: ${emissions.subwayEmission.toFixed(2)} kg`, 10, 90);
+            doc.text(`Emissão de Energia: ${emissions.energyEmission.toFixed(2)} kg`, 10, 100);
+            doc.text(`Total de Emissão: ${emissions.totalEmission.toFixed(2)} kg`, 10, 110);
+            doc.text(`Emissão Estimada: ${estimatedEmission} kg`, 10, 120);
+            doc.text(`Ações para Melhorar: ${improvementActions}`, 10, 130);
+
+            const charts = ['myAreaChart', 'myPieChart'];
+            let yOffset = 140;
+
+            charts.forEach((chartId, index) => {
+                const chartElement = document.getElementById(chartId);
+
+                html2canvas(chartElement).then((canvas) => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 180;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    doc.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
+
+                    yOffset += imgHeight + 10;
+
+                    if (index === charts.length - 1) {
+                        doc.setFontSize(10);
+                        doc.text("Copyright &copy; Gabriel dos Santos 2025", 10, yOffset + 10);
+                        doc.save("relatorio_pegada_carbono.pdf");
+                    }
+                });
+            });
+        }
+
+        function exportToCSV(emissions) {
+            const csv = Papa.unparse([{
+                Carro: emissions.carEmission.toFixed(2),
+                Ônibus: emissions.busEmission.toFixed(2),
+                Moto: emissions.motoEmission.toFixed(2),
+                Caminhão: emissions.truckEmission.toFixed(2),
+                Trem: emissions.trainEmission.toFixed(2),
+                Avião: emissions.planeEmission.toFixed(2),
+                Metrô: emissions.subwayEmission.toFixed(2),
+                Energia: emissions.energyEmission.toFixed(2),
+                Total: emissions.totalEmission.toFixed(2)
+            }]);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'pegada_carbono.csv';
+            link.click();
+        }
+
         document.getElementById('carbonFootprintForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -418,7 +634,7 @@
 
             document.getElementById('totalEmission').value = emissions.totalEmission;
 
-            alert(`Emissão calculada:\nCarro: ${emissions.carEmission.toFixed(2)} kg\nÔnibus: ${emissions.busEmission.toFixed(2)} kg\nMoto: ${emissions.motoEmission.toFixed(2)} kg\nCaminhão: ${emissions.truckEmission.toFixed(2)} kg\nTrem: ${emissions.trainEmission.toFixed(2)} kg\nAvião: ${emissions.planeEmission.toFixed(2)} kg\nMetrô: ${emissions.subwayEmission.toFixed(2)} kg\nEnergia: ${emissions.energyEmission.toFixed(2)} kg\n\nEmissão estimada pelo usuário: ${estimatedEmission} kg\n\nAções para melhorar:\n${improvementActions}`);
+            alert(`Emissão calculada:\nCarro: ${emissions.carEmission.toFixed(2)} kg\nÔnibus: ${emissions.busEmission.toFixed(2)} kg\nMoto: ${emissions.motoEmission.toFixed(2)} kg\nCaminhão: ${emissions.truckEmission.toFixed(2)} kg\nTrem: ${emissions.trainEmission.toFixed(2)} kg\nAvião: ${emissions.planeEmission.toFixed(2)} kg\nMetrô: ${emissions.subwayEmission.toFixed(2)} kg\nEnergia: ${emissions.energyEmission.toFixed(2)} kg\nTotal: ${emissions.totalEmission.toFixed(2)} kg\n\nEmissão estimada pelo usuário: ${estimatedEmission} kg\n\nAções para melhorar:\n${improvementActions}`);
 
             updateCharts(emissions.carEmission, emissions.busEmission, emissions.motoEmission, emissions.truckEmission, emissions.trainEmission, emissions.planeEmission, emissions.subwayEmission, emissions.energyEmission);
 
