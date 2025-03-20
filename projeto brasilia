@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible content="IE=edge">
+    <meta http-equiv="X-UA-Compatible content=" IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Calculadora de Pegada de Carbono">
     <meta name="author" content="Gabriel dos Santos">
@@ -139,7 +139,8 @@
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Informe seus dados de transporte</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Informe seus dados de transporte
+                                        </h6>
                                     </div>
                                     <div class="card-body">
                                         <form id="carbonFootprintForm">
@@ -179,12 +180,14 @@
                                                     placeholder="Km de metrô" min="0" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="energyConsumption">Consumo de energia elétrica (kWh/mês)</label>
+                                                <label for="energyConsumption">Consumo de energia elétrica
+                                                    (kWh/mês)</label>
                                                 <input type="number" class="form-control" id="energyConsumption"
                                                     placeholder="Consumo de energia" min="0" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="estimatedEmission">Quanto você acha que consome de emissão de carbono por mês? (em kg)</label>
+                                                <label for="estimatedEmission">Quanto você acha que consome de emissão
+                                                    de carbono por mês? (em kg)</label>
                                                 <input type="number" class="form-control" id="estimatedEmission"
                                                     placeholder="Emissão estimada de carbono" min="0" required>
                                             </div>
@@ -200,11 +203,15 @@
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                                <label for="improvementActions">O que você faria para melhorar essa situação?</label>
+                                                <label for="improvementActions">O que você faria para melhorar essa
+                                                    situação?</label>
                                                 <textarea class="form-control" id="improvementActions" rows="3"
                                                     placeholder="Descreva suas ações..." required></textarea>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Calcular Pegada de
+                                                Carbono</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                onclick="showCompensationCalculator()">Calcular Compensação de
                                                 Carbono</button>
                                         </form>
                                     </div>
@@ -214,6 +221,7 @@
 
                         <!-- Seção de Gráficos -->
                         <div class="row">
+                            <!-- Gráfico de Área (Emissão de CO2 por Tipo de Transporte) -->
                             <div class="col-xl-8 col-lg-7">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
@@ -222,12 +230,13 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-area">
-                                            <canvas id="myAreaChart"></canvas>
+                                            <canvas id="myAreaChart"></canvas> <!-- ID único para o gráfico de área -->
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Gráfico de Pizza (Distribuição da Pegada de Carbono) -->
                             <div class="col-xl-4 col-lg-5">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
@@ -236,7 +245,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-pie pt-4 pb-2">
-                                            <canvas id="myPieChart"></canvas>
+                                            <canvas id="myPieChart"></canvas> <!-- ID único para o gráfico de pizza -->
                                         </div>
                                         <div class="mt-4 text-center small">
                                             <span class="mr-2">
@@ -268,35 +277,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Seção de Resultados por Região -->
-                        <div class="row" id="regionFootprintResult" style="display: none;">
-                            <div class="col-xl-12 col-lg-12">
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Pegada de Carbono na Sua Região</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <p id="regionFootprintText"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Seção de Comparação Nacional -->
-                        <div class="row" id="nationalComparison" style="display: none;">
-                            <div class="col-xl-12 col-lg-12">
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Comparação com a Média Nacional</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <p id="nationalComparisonText"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Seção de Dicas Personalizadas -->
                         <div class="row" id="personalizedTips" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
@@ -324,6 +304,31 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Seção de Compensação de Carbono -->
+                        <div class="row" id="compensationCalculator" style="display: none;">
+                            <div class="col-xl-12 col-lg-12">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Calculadora de Compensação de
+                                            Carbono</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="carbonCompensationForm">
+                                            <div class="form-group">
+                                                <label for="compensationAmount">Quantos kg de CO2 você deseja
+                                                    compensar?</label>
+                                                <input type="number" class="form-control" id="compensationAmount"
+                                                    placeholder="Kg de CO2" min="0" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Calcular Compensação</button>
+                                        </form>
+                                        <div id="compensationResult" style="margin-top: 20px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -338,12 +343,10 @@
         </div>
     </div>
 
-    <!-- Botão de Voltar ao Topo -->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Scripts -->
     <script>
         function encryptData(data, key) {
             return CryptoJS.AES.encrypt(data, key).toString();
@@ -395,6 +398,10 @@
             loadHistory();
         }
 
+        function showCompensationCalculator() {
+            document.getElementById('compensationCalculator').style.display = 'block';
+        }
+
         document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -402,7 +409,7 @@
             const email = document.getElementById('registerEmail').value;
             const senha = document.getElementById('registerPassword').value;
 
-            alert('Registro simulado com sucesso!');
+            alert('Registro realizado com sucesso!');
             showLogin();
         });
 
@@ -420,7 +427,7 @@
                 localStorage.removeItem('savedPassword');
             }
 
-            alert('Login simulado com sucesso!');
+            alert('Login realizado com sucesso!');
             showCalculator();
         });
 
@@ -468,7 +475,7 @@
         }
 
         function getNationalAverage() {
-            return 200; // Média nacional fictícia
+            return 200;
         }
 
         function generatePersonalizedTips(emissions) {
@@ -500,7 +507,7 @@
             const history = JSON.parse(localStorage.getItem('calculationHistory')) || [];
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
-            history.forEach((entry, index) => {
+            history.forEach((entry) => {
                 const li = document.createElement('li');
                 li.innerHTML = `<strong>${entry.date}</strong>: ${entry.emissions.totalEmission.toFixed(2)} kg de CO2`;
                 historyList.appendChild(li);
@@ -563,69 +570,6 @@
             });
         }
 
-        function generatePDF(emissions, estimatedEmission, improvementActions) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(18);
-            doc.text("Relatório de Pegada de Carbono", 10, 20);
-
-            doc.setFontSize(12);
-            doc.text(`Emissão de Carro: ${emissions.carEmission.toFixed(2)} kg`, 10, 30);
-            doc.text(`Emissão de Ônibus: ${emissions.busEmission.toFixed(2)} kg`, 10, 40);
-            doc.text(`Emissão de Moto: ${emissions.motoEmission.toFixed(2)} kg`, 10, 50);
-            doc.text(`Emissão de Caminhão: ${emissions.truckEmission.toFixed(2)} kg`, 10, 60);
-            doc.text(`Emissão de Trem: ${emissions.trainEmission.toFixed(2)} kg`, 10, 70);
-            doc.text(`Emissão de Avião: ${emissions.planeEmission.toFixed(2)} kg`, 10, 80);
-            doc.text(`Emissão de Metrô: ${emissions.subwayEmission.toFixed(2)} kg`, 10, 90);
-            doc.text(`Emissão de Energia: ${emissions.energyEmission.toFixed(2)} kg`, 10, 100);
-            doc.text(`Total de Emissão: ${emissions.totalEmission.toFixed(2)} kg`, 10, 110);
-            doc.text(`Emissão Estimada: ${estimatedEmission} kg`, 10, 120);
-            doc.text(`Ações para Melhorar: ${improvementActions}`, 10, 130);
-
-            const charts = ['myAreaChart', 'myPieChart'];
-            let yOffset = 140;
-
-            charts.forEach((chartId, index) => {
-                const chartElement = document.getElementById(chartId);
-
-                html2canvas(chartElement).then((canvas) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = 180;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-                    doc.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
-
-                    yOffset += imgHeight + 10;
-
-                    if (index === charts.length - 1) {
-                        doc.setFontSize(10);
-                        doc.text("Copyright &copy; Gabriel dos Santos 2025", 10, yOffset + 10);
-                        doc.save("relatorio_pegada_carbono.pdf");
-                    }
-                });
-            });
-        }
-
-        function exportToCSV(emissions) {
-            const csv = Papa.unparse([{
-                Carro: emissions.carEmission.toFixed(2),
-                Ônibus: emissions.busEmission.toFixed(2),
-                Moto: emissions.motoEmission.toFixed(2),
-                Caminhão: emissions.truckEmission.toFixed(2),
-                Trem: emissions.trainEmission.toFixed(2),
-                Avião: emissions.planeEmission.toFixed(2),
-                Metrô: emissions.subwayEmission.toFixed(2),
-                Energia: emissions.energyEmission.toFixed(2),
-                Total: emissions.totalEmission.toFixed(2)
-            }]);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'pegada_carbono.csv';
-            link.click();
-        }
-
         document.getElementById('carbonFootprintForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -643,16 +587,37 @@
 
             const emissions = calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, trainKm, planeKm, subwayKm, energyConsumption);
 
-            document.getElementById('totalEmission').value = emissions.totalEmission;
+            // Exibir resultados em uma caixa de mensagem
+            const resultMessage = `
+                Emissão calculada:
+                Carro: ${emissions.carEmission.toFixed(2)} kg
+                Ônibus: ${emissions.busEmission.toFixed(2)} kg
+                Moto: ${emissions.motoEmission.toFixed(2)} kg
+                Caminhão: ${emissions.truckEmission.toFixed(2)} kg
+                Trem: ${emissions.trainEmission.toFixed(2)} kg
+                Avião: ${emissions.planeEmission.toFixed(2)} kg
+                Metrô: ${emissions.subwayEmission.toFixed(2)} kg
+                Energia: ${emissions.energyEmission.toFixed(2)} kg
+                Total: ${emissions.totalEmission.toFixed(2)} kg
+                Emissão estimada pelo usuário: ${estimatedEmission} kg
+                Ações para melhorar:
+                ${improvementActions}
+            `;
+            alert(resultMessage); // Você pode substituir por uma caixa de mensagem mais estilizada se desejar
 
-            alert(`Emissão calculada:\nCarro: ${emissions.carEmission.toFixed(2)} kg\nÔnibus: ${emissions.busEmission.toFixed(2)} kg\nMoto: ${emissions.motoEmission.toFixed(2)} kg\nCaminhão: ${emissions.truckEmission.toFixed(2)} kg\nTrem: ${emissions.trainEmission.toFixed(2)} kg\nAvião: ${emissions.planeEmission.toFixed(2)} kg\nMetrô: ${emissions.subwayEmission.toFixed(2)} kg\nEnergia: ${emissions.energyEmission.toFixed(2)} kg\nTotal: ${emissions.totalEmission.toFixed(2)} kg\n\nEmissão estimada pelo usuário: ${estimatedEmission} kg\n\nAções para melhorar:\n${improvementActions}`);
-
+            // Atualizar gráficos
             updateCharts(emissions.carEmission, emissions.busEmission, emissions.motoEmission, emissions.truckEmission, emissions.trainEmission, emissions.planeEmission, emissions.subwayEmission, emissions.energyEmission);
 
+            // Salvar cálculo no histórico
+            saveCalculationToHistory(emissions, region, improvementActions);
+            loadHistory(); // Carregar histórico após salvar
+
+            // Exibir pegada de carbono média na região
             const regionFootprint = getRegionFootprint(region);
             document.getElementById('regionFootprintText').textContent = `A pegada de carbono média na região ${region} é de ${regionFootprint} kg de CO2 por mês.`;
             document.getElementById('regionFootprintResult').style.display = 'block';
 
+            // Comparação com a média nacional
             const nationalAverage = getNationalAverage();
             const comparisonText = emissions.totalEmission > nationalAverage
                 ? `Sua pegada de carbono (${emissions.totalEmission.toFixed(2)} kg) está acima da média nacional (${nationalAverage} kg).`
@@ -660,6 +625,7 @@
             document.getElementById('nationalComparisonText').textContent = comparisonText;
             document.getElementById('nationalComparison').style.display = 'block';
 
+            // Gerar dicas personalizadas
             const tips = generatePersonalizedTips(emissions);
             const tipsList = document.getElementById('tipsList');
             tipsList.innerHTML = '';
@@ -669,11 +635,21 @@
                 tipsList.appendChild(li);
             });
             document.getElementById('personalizedTips').style.display = 'block';
+        });
 
-            saveCalculationToHistory(emissions, region, improvementActions);
-            loadHistory();
+        // Lógica da calculadora de compensação de carbono
+        document.getElementById('carbonCompensationForm').addEventListener('submit', function (event) {
+            event.preventDefault();
 
-            generatePDF(emissions, estimatedEmission, improvementActions);
+            const compensationAmount = parseFloat(document.getElementById('compensationAmount').value) || 0;
+
+            // Aqui você pode adicionar a lógica para calcular a compensação
+            // Por exemplo, você pode calcular quantas árvores precisam ser plantadas
+            const treesNeeded = compensationAmount / 22; // Supondo que uma árvore compense 22 kg de CO2 por ano
+
+            document.getElementById('compensationResult').innerHTML = `
+                Para compensar ${compensationAmount} kg de CO2, você precisaria plantar aproximadamente ${Math.ceil(treesNeeded)} árvores.
+            `;
         });
 
         loadCredentials();
