@@ -37,6 +37,8 @@
                                 <div class="col-lg-6">
                                     <div class="p-5">
                                         <div class="text-center">
+                                            <h2 class="h5 text-gray-900 mb-4"><strong>Calculadora de Pegada de
+                                                    Carbono</strong></h2> <!-- Título adicionado -->
                                             <h1 class="h4 text-gray-900 mb-4">Crie uma conta!</h1>
                                         </div>
                                         <form class="user" id="registerForm">
