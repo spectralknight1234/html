@@ -7,16 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Calculadora de Pegada de Carbono">
     <meta name="author" content="Gabriel dos Santos">
-
     <title>Calculadora de Pegada de Carbono</title>
-
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -30,7 +26,6 @@
 
 <body id="page-top">
 
-    <!-- Tela de Registro -->
     <div id="registerScreen" class="bg-gradient-primary">
         <div class="container">
             <div class="row justify-content-center">
@@ -57,9 +52,8 @@
                                                 <input type="password" class="form-control form-control-user"
                                                     id="registerPassword" placeholder="Senha" required>
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-user btn-block">
-                                                Registrar
-                                            </button>
+                                            <button type="submit"
+                                                class="btn btn-primary btn-user btn-block">Registrar</button>
                                         </form>
                                         <hr>
                                         <div class="text-center">
@@ -76,7 +70,6 @@
         </div>
     </div>
 
-    <!-- Tela de Login -->
     <div id="loginScreen" class="bg-gradient-primary" style="display: none;">
         <div class="container">
             <div class="row justify-content-center">
@@ -106,13 +99,15 @@
                                                         for="rememberMe">Lembrar-me</label>
                                                 </div>
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-user btn-block">
-                                                Login
-                                            </button>
+                                            <button type="submit"
+                                                class="btn btn-primary btn-user btn-block">Login</button>
                                         </form>
                                         <hr>
                                         <div class="text-center">
                                             <a class="small" href="#" onclick="showRegister()">Criar uma conta!</a>
+                                            <br>
+                                            <a class="small" href="#" onclick="showResetPassword()">Esqueceu sua
+                                                senha?</a>
                                         </div>
                                     </div>
                                 </div>
@@ -124,7 +119,41 @@
         </div>
     </div>
 
-    <!-- Tela da Calculadora de Pegada de Carbono -->
+    <div id="resetPasswordScreen" class="bg-gradient-primary" style="display: none;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-12 col-md-9">
+                    <div class="card o-hidden border-0 shadow-lg my-5">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-lg-6 d-none d-lg-block bg-reset-image"></div>
+                                <div class="col-lg-6">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gray-900 mb-4">Redefinir Senha</h1>
+                                        </div>
+                                        <form class="user" id="resetPasswordForm">
+                                            <div class="form-group">
+                                                <input type="email" class="form-control form-control-user"
+                                                    id="resetEmail" placeholder="E-mail" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-user btn-block">Enviar
+                                                Redefinição</button>
+                                        </form>
+                                        <hr>
+                                        <div class="text-center">
+                                            <a class="small" href="#" onclick="showLogin()">Voltar para o login</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="calculatorScreen" style="display: none;">
         <div id="wrapper">
             <div id="content-wrapper" class="d-flex flex-column">
@@ -134,7 +163,6 @@
                             <h1 class="h3 mb-0 text-gray-800">Calculadora de Pegada de Carbono</h1>
                         </div>
 
-                        <!-- Seção de Transporte -->
                         <div class="row">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -219,9 +247,7 @@
                             </div>
                         </div>
 
-                        <!-- Seção de Gráficos -->
                         <div class="row">
-                            <!-- Gráfico de Área (Emissão de CO2 por Tipo de Transporte) -->
                             <div class="col-xl-8 col-lg-7">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
@@ -230,13 +256,12 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-area">
-                                            <canvas id="myAreaChart"></canvas> <!-- ID único para o gráfico de área -->
+                                            <canvas id="myAreaChart"></canvas>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Gráfico de Pizza (Distribuição da Pegada de Carbono) -->
                             <div class="col-xl-4 col-lg-5">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
@@ -245,39 +270,23 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-pie pt-4 pb-2">
-                                            <canvas id="myPieChart"></canvas> <!-- ID único para o gráfico de pizza -->
+                                            <canvas id="myPieChart"></canvas>
                                         </div>
                                         <div class="mt-4 text-center small">
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-primary"></i> Carro
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-success"></i> Ônibus
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-warning"></i> Moto
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-danger"></i> Caminhão
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-info"></i> Trem
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-secondary"></i> Avião
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-dark"></i> Metrô
-                                            </span>
-                                            <span class="mr-2">
-                                                <i class="fas fa-circle text-light"></i> Energia
-                                            </span>
+                                            <span class="mr-2"><i class="fas fa-circle text-primary"></i> Carro</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-success"></i> Ônibus</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-warning"></i> Moto</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-danger"></i> Caminhão</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-info"></i> Trem</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-secondary"></i> Avião</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-dark"></i> Metrô</span>
+                                            <span class="mr-2"><i class="fas fa-circle text-light"></i> Energia</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Seção de Dicas Personalizadas -->
+
                         <div class="row" id="personalizedTips" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -291,7 +300,6 @@
                             </div>
                         </div>
 
-                        <!-- Seção de Histórico de Cálculos -->
                         <div class="row" id="historySection" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -305,7 +313,6 @@
                             </div>
                         </div>
 
-                        <!-- Seção de Compensação de Carbono -->
                         <div class="row" id="compensationCalculator" style="display: none;">
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
@@ -383,12 +390,21 @@
             document.getElementById('registerScreen').style.display = 'block';
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('calculatorScreen').style.display = 'none';
+            document.getElementById('resetPasswordScreen').style.display = 'none';
         }
 
         function showLogin() {
             document.getElementById('registerScreen').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('calculatorScreen').style.display = 'none';
+            document.getElementById('resetPasswordScreen').style.display = 'none';
+        }
+
+        function showResetPassword() {
+            document.getElementById('registerScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('calculatorScreen').style.display = 'none';
+            document.getElementById('resetPasswordScreen').style.display = 'block';
         }
 
         function showCalculator() {
@@ -404,31 +420,33 @@
 
         document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
             const nome = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const senha = document.getElementById('registerPassword').value;
-
             alert('Registro realizado com sucesso!');
             showLogin();
         });
 
         document.getElementById('loginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
-
             if (rememberMe) {
                 saveCredentials(email, senha);
             } else {
                 localStorage.removeItem('savedEmail');
                 localStorage.removeItem('savedPassword');
             }
-
             alert('Login realizado com sucesso!');
             showCalculator();
+        });
+
+        document.getElementById('resetPasswordForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            alert(`Instruções de redefinição de senha foram enviadas para ${email}.`);
+            showLogin();
         });
 
         function calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, trainKm, planeKm, subwayKm, energyConsumption) {
@@ -572,7 +590,6 @@
 
         document.getElementById('carbonFootprintForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
             const carKm = parseFloat(document.getElementById('carKm').value) || 0;
             const busKm = parseFloat(document.getElementById('busKm').value) || 0;
             const motoKm = parseFloat(document.getElementById('motoKm').value) || 0;
@@ -586,8 +603,6 @@
             const improvementActions = document.getElementById('improvementActions').value;
 
             const emissions = calculateCarbonFootprint(carKm, busKm, motoKm, truckKm, trainKm, planeKm, subwayKm, energyConsumption);
-
-            // Exibir resultados em uma caixa de mensagem
             const resultMessage = `
                 Emissão calculada:
                 Carro: ${emissions.carEmission.toFixed(2)} kg
@@ -603,29 +618,19 @@
                 Ações para melhorar:
                 ${improvementActions}
             `;
-            alert(resultMessage); // Você pode substituir por uma caixa de mensagem mais estilizada se desejar
-
-            // Atualizar gráficos
+            alert(resultMessage);
             updateCharts(emissions.carEmission, emissions.busEmission, emissions.motoEmission, emissions.truckEmission, emissions.trainEmission, emissions.planeEmission, emissions.subwayEmission, emissions.energyEmission);
-
-            // Salvar cálculo no histórico
             saveCalculationToHistory(emissions, region, improvementActions);
-            loadHistory(); // Carregar histórico após salvar
-
-            // Exibir pegada de carbono média na região
+            loadHistory();
             const regionFootprint = getRegionFootprint(region);
             document.getElementById('regionFootprintText').textContent = `A pegada de carbono média na região ${region} é de ${regionFootprint} kg de CO2 por mês.`;
             document.getElementById('regionFootprintResult').style.display = 'block';
-
-            // Comparação com a média nacional
             const nationalAverage = getNationalAverage();
             const comparisonText = emissions.totalEmission > nationalAverage
                 ? `Sua pegada de carbono (${emissions.totalEmission.toFixed(2)} kg) está acima da média nacional (${nationalAverage} kg).`
                 : `Sua pegada de carbono (${emissions.totalEmission.toFixed(2)} kg) está abaixo da média nacional (${nationalAverage} kg).`;
             document.getElementById('nationalComparisonText').textContent = comparisonText;
             document.getElementById('nationalComparison').style.display = 'block';
-
-            // Gerar dicas personalizadas
             const tips = generatePersonalizedTips(emissions);
             const tipsList = document.getElementById('tipsList');
             tipsList.innerHTML = '';
@@ -637,19 +642,11 @@
             document.getElementById('personalizedTips').style.display = 'block';
         });
 
-        // Lógica da calculadora de compensação de carbono
         document.getElementById('carbonCompensationForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
             const compensationAmount = parseFloat(document.getElementById('compensationAmount').value) || 0;
-
-            // Aqui você pode adicionar a lógica para calcular a compensação
-            // Por exemplo, você pode calcular quantas árvores precisam ser plantadas
-            const treesNeeded = compensationAmount / 22; // Supondo que uma árvore compense 22 kg de CO2 por ano
-
-            document.getElementById('compensationResult').innerHTML = `
-                Para compensar ${compensationAmount} kg de CO2, você precisaria plantar aproximadamente ${Math.ceil(treesNeeded)} árvores.
-            `;
+            const treesNeeded = compensationAmount / 22;
+            document.getElementById('compensationResult').innerHTML = `Para compensar ${compensationAmount} kg de CO2, você precisaria plantar aproximadamente ${Math.ceil(treesNeeded)} árvores.`;
         });
 
         loadCredentials();
