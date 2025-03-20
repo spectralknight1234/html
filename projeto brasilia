@@ -9,7 +9,9 @@
     <meta name="author" content="Gabriel dos Santos">
     <title>Calculadora de Pegada de Carbono</title>
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -39,19 +41,24 @@
                                         </div>
                                         <form class="user" id="registerForm">
                                             <div class="form-group">
-                                                <input type="text" class="form-control form-control-user" id="registerName" placeholder="Nome completo" required>
+                                                <input type="text" class="form-control form-control-user"
+                                                    id="registerName" placeholder="Nome completo" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="email" class="form-control form-control-user" id="registerEmail" placeholder="E-mail" required>
+                                                <input type="email" class="form-control form-control-user"
+                                                    id="registerEmail" placeholder="E-mail" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="password" class="form-control form-control-user" id="registerPassword" placeholder="Senha" required>
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="registerPassword" placeholder="Senha" required>
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-user btn-block">Registrar</button>
+                                            <button type="submit"
+                                                class="btn btn-primary btn-user btn-block">Registrar</button>
                                         </form>
                                         <hr>
                                         <div class="text-center">
-                                            <a class="small" href="#" onclick="showLogin()">Já tem uma conta? Faça login!</a>
+                                            <a class="small" href="#" onclick="showLogin()">Já tem uma conta? Faça
+                                                login!</a>
                                         </div>
                                     </div>
                                 </div>
@@ -78,24 +85,29 @@
                                         </div>
                                         <form class="user" id="loginForm">
                                             <div class="form-group">
-                                                <input type="email" class="form-control form-control-user" id="loginEmail" placeholder="E-mail" required>
+                                                <input type="email" class="form-control form-control-user"
+                                                    id="loginEmail" placeholder="E-mail" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="password" class="form-control form-control-user" id="loginPassword" placeholder="Senha" required>
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="loginPassword" placeholder="Senha" required>
                                             </div>
                                             <div class="form-group">
                                                 <div class="custom-control custom-checkbox small">
                                                     <input type="checkbox" class="custom-control-input" id="rememberMe">
-                                                    <label class="custom-control-label" for="rememberMe">Lembrar-me</label>
+                                                    <label class="custom-control-label"
+                                                        for="rememberMe">Lembrar-me</label>
                                                 </div>
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-user btn-block">Login</button>
+                                            <button type="submit"
+                                                class="btn btn-primary btn-user btn-block">Login</button>
                                         </form>
                                         <hr>
                                         <div class="text-center">
                                             <a class="small" href="#" onclick="showRegister()">Criar uma conta!</a>
                                             <br>
-                                            <a class="small" href="#" onclick="showResetPassword()">Esqueceu sua senha?</a>
+                                            <a class="small" href="#" onclick="showResetPassword()">Esqueceu sua
+                                                senha?</a>
                                         </div>
                                     </div>
                                 </div>
@@ -122,12 +134,15 @@
                                         </div>
                                         <form class="user" id="newPasswordForm">
                                             <div class="form-group">
-                                                <input type="password" class="form-control form-control-user" id="newPassword" placeholder="Nova Senha" required>
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="newPassword" placeholder="Nova Senha" required>
                                             </div>
                                             <div class="form-group">
-                                                <input type="password" class="form-control form-control-user" id="confirmPassword" placeholder="Confirme a Nova Senha" required>
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="confirmPassword" placeholder="Confirme a Nova Senha" required>
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-user btn-block">Redefinir Senha</button>
+                                            <button type="submit" class="btn btn-primary btn-user btn-block">Redefinir
+                                                Senha</button>
                                         </form>
                                         <hr>
                                         <div class="text-center">
@@ -156,45 +171,57 @@
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Informe seus dados de transporte</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Informe seus dados de transporte
+                                        </h6>
                                     </div>
                                     <div class="card-body">
                                         <form id="carbonFootprintForm">
                                             <div class="form-group">
                                                 <label for="carKm">Quantos km você roda de carro por mês?</label>
-                                                <input type="number" class="form-control" id="carKm" placeholder="Km de carro" min="0" required>
+                                                <input type="number" class="form-control" id="carKm"
+                                                    placeholder="Km de carro" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="busKm">Quantos km você roda de ônibus por mês?</label>
-                                                <input type="number" class="form-control" id="busKm" placeholder="Km de ônibus" min="0" required>
+                                                <input type="number" class="form-control" id="busKm"
+                                                    placeholder="Km de ônibus" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="motoKm">Quantos km você roda de moto por mês?</label>
-                                                <input type="number" class="form-control" id="motoKm" placeholder="Km de moto" min="0" required>
+                                                <input type="number" class="form-control" id="motoKm"
+                                                    placeholder="Km de moto" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="truckKm">Quantos km você roda de caminhão por mês?</label>
-                                                <input type="number" class="form-control" id="truckKm" placeholder="Km de caminhão" min="0" required>
+                                                <input type="number" class="form-control" id="truckKm"
+                                                    placeholder="Km de caminhão" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="trainKm">Quantos km você viaja de trem por mês?</label>
-                                                <input type="number" class="form-control" id="trainKm" placeholder="Km de trem" min="0" required>
+                                                <input type="number" class="form-control" id="trainKm"
+                                                    placeholder="Km de trem" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="planeKm">Quantos km você viaja de avião por mês?</label>
-                                                <input type="number" class="form-control" id="planeKm" placeholder="Km de avião" min="0" required>
+                                                <input type="number" class="form-control" id="planeKm"
+                                                    placeholder="Km de avião" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="subwayKm">Quantos km você viaja de metrô por mês?</label>
-                                                <input type="number" class="form-control" id="subwayKm" placeholder="Km de metrô" min="0" required>
+                                                <input type="number" class="form-control" id="subwayKm"
+                                                    placeholder="Km de metrô" min="0" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="energyConsumption">Consumo de energia elétrica (kWh/mês)</label>
-                                                <input type="number" class="form-control" id="energyConsumption" placeholder="Consumo de energia" min="0" required>
+                                                <label for="energyConsumption">Consumo de energia elétrica
+                                                    (kWh/mês)</label>
+                                                <input type="number" class="form-control" id="energyConsumption"
+                                                    placeholder="Consumo de energia" min="0" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="estimatedEmission">Quanto você acha que consome de emissão de carbono por mês? (em kg)</label>
-                                                <input type="number" class="form-control" id="estimatedEmission" placeholder="Emissão estimada de carbono" min="0" required>
+                                                <label for="estimatedEmission">Quanto você acha que consome de emissão
+                                                    de carbono por mês? (em kg)</label>
+                                                <input type="number" class="form-control" id="estimatedEmission"
+                                                    placeholder="Emissão estimada de carbono" min="0" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="region">Em qual região do Brasil você mora?</label>
@@ -208,11 +235,16 @@
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                                <label for="improvementActions">O que você faria para melhorar essa situação?</label>
-                                                <textarea class="form-control" id="improvementActions" rows="3" placeholder="Descreva suas ações..." required></textarea>
+                                                <label for="improvementActions">O que você faria para melhorar essa
+                                                    situação?</label>
+                                                <textarea class="form-control" id="improvementActions" rows="3"
+                                                    placeholder="Descreva suas ações..." required></textarea>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Calcular Pegada de Carbono</button>
-                                            <button type="button" class="btn btn-secondary" onclick="showCompensationCalculator()">Calcular Compensação de Carbono</button>
+                                            <button type="submit" class="btn btn-primary">Calcular Pegada de
+                                                Carbono</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                onclick="showCompensationCalculator()">Calcular Compensação de
+                                                Carbono</button>
                                         </form>
                                     </div>
                                 </div>
@@ -223,7 +255,8 @@
                             <div class="col-xl-8 col-lg-7">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Emissão de CO2 (kg) por Tipo de Transporte</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Emissão de CO2 (kg) por Tipo de
+                                            Transporte</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-area">
@@ -236,7 +269,8 @@
                             <div class="col-xl-4 col-lg-5">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Distribuição da Pegada de Carbono</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Distribuição da Pegada de Carbono
+                                        </h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-pie pt-4 pb-2">
@@ -287,13 +321,16 @@
                             <div class="col-xl-12 col-lg-12">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Calculadora de Compensação de Carbono</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Calculadora de Compensação de
+                                            Carbono</h6>
                                     </div>
                                     <div class="card-body">
                                         <form id="carbonCompensationForm">
                                             <div class="form-group">
-                                                <label for="compensationAmount">Quantos kg de CO2 você deseja compensar?</label>
-                                                <input type="number" class="form-control" id="compensationAmount" placeholder="Kg de CO2" min="0" required>
+                                                <label for="compensationAmount">Quantos kg de CO2 você deseja
+                                                    compensar?</label>
+                                                <input type="number" class="form-control" id="compensationAmount"
+                                                    placeholder="Kg de CO2" min="0" required>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Calcular Compensação</button>
                                         </form>
